@@ -1,0 +1,81 @@
+
+Total utilisation:
+0.250000  0.250000  0.250000  0.250000  
+0.300000  0.400000  0.400000  0.400000  
+0.066667  0.133333  0.200000  0.200000  
+0.066667  0.133333  0.200000  0.266667  
+Schedulable
+Threshold criticality level = 1
+x factor = 0.791209
+
+Taskset:
+Task 0, criticality level 0, phase 6, relative deadline 20, virtual deadline 20, WCET 5 5 5 5 
+Task 1, criticality level 1, phase 0, relative deadline 10, virtual deadline 10, WCET 3 4 4 4 
+Task 2, criticality level 2, phase 5, relative deadline 15, virtual deadline 11, WCET 1 2 3 3 
+Task 3, criticality level 3, phase 0, relative deadline 15, virtual deadline 11, WCET 1 2 3 4 
+
+Hyperperiod = 60
+
+Kernel Total Exec time: 0 | Curr Crit level: 0 | Scheduled job: 1  Exec time: 4  Rem exec time: 4  Deadline: 10  
+Kernel Total Exec time: 1 | Curr Crit level: 0 | Scheduled job: 1  Exec time: 4  Rem exec time: 3  Deadline: 10  
+Kernel Total Exec time: 2 | Curr Crit level: 0 | Scheduled job: 1  Exec time: 4  Rem exec time: 2  Deadline: 10  
+Kernel Total Exec time: 3 | Curr Crit level: 0 | Scheduled job: 1  Exec time: 4  Rem exec time: 1  Deadline: 10  
+Kernel Total Exec time: 4 | Curr Crit level: 0 | Criticality Changed | Scheduled job: 3  Exec time: 1  Rem exec time: 1  Deadline: 11  
+Kernel Total Exec time: 5 | Curr Crit level: 1 | Scheduled job: 2  Exec time: 2  Rem exec time: 2  Deadline: 16  
+Kernel Total Exec time: 6 | Curr Crit level: 1 | Scheduled job: 2  Exec time: 2  Rem exec time: 1  Deadline: 16  
+Kernel Total Exec time: 7 | Curr Crit level: 1 | Kernel Idle 
+Kernel Total Exec time: 8 | Curr Crit level: 1 | Kernel Idle 
+Kernel Total Exec time: 9 | Curr Crit level: 1 | Kernel Idle 
+Kernel Total Exec time: 10 | Curr Crit level: 1 | Scheduled job: 1  Exec time: 6  Rem exec time: 6  Deadline: 20  
+Kernel Total Exec time: 11 | Curr Crit level: 1 | Scheduled job: 1  Exec time: 6  Rem exec time: 5  Deadline: 20  
+Kernel Total Exec time: 12 | Curr Crit level: 1 | Scheduled job: 1  Exec time: 6  Rem exec time: 4  Deadline: 20  
+Kernel Total Exec time: 13 | Curr Crit level: 1 | Scheduled job: 1  Exec time: 6  Rem exec time: 3  Deadline: 20  
+Kernel Total Exec time: 14 | Curr Crit level: 1 | Scheduled job: 1  Exec time: 6  Rem exec time: 2  Deadline: 20  
+Kernel Total Exec time: 15 | Curr Crit level: 1 | Scheduled job: 1  Exec time: 6  Rem exec time: 1  Deadline: 20  
+Kernel Total Exec time: 16 | Curr Crit level: 1 | Criticality Changed | 
+Kernel Total Exec time: 16 | Curr Crit level: 2 | 
+Kernel Total Exec time: 16 | Curr Crit level: 2 | Criticality Changed | Scheduled job: 3  Exec time: 2  Rem exec time: 2  Deadline: 30  
+Kernel Total Exec time: 17 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 2  Rem exec time: 1  Deadline: 30  
+Kernel Total Exec time: 18 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 19 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 20 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 21 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 22 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 23 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 24 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 25 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 26 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 27 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 28 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 29 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 30 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 7  Rem exec time: 7  Deadline: 45  
+Kernel Total Exec time: 31 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 7  Rem exec time: 6  Deadline: 45  
+Kernel Total Exec time: 32 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 7  Rem exec time: 5  Deadline: 45  
+Kernel Total Exec time: 33 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 7  Rem exec time: 4  Deadline: 45  
+Kernel Total Exec time: 34 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 7  Rem exec time: 3  Deadline: 45  
+Kernel Total Exec time: 35 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 7  Rem exec time: 2  Deadline: 45  
+Kernel Total Exec time: 36 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 7  Rem exec time: 1  Deadline: 45  
+Kernel Total Exec time: 37 | Curr Crit level: 3 | Criticality Changed | Kernel Idle 
+Kernel Total Exec time: 38 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 39 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 40 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 41 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 42 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 43 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 44 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 45 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 4  Rem exec time: 4  Deadline: 60  
+Kernel Total Exec time: 46 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 4  Rem exec time: 3  Deadline: 60  
+Kernel Total Exec time: 47 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 4  Rem exec time: 2  Deadline: 60  
+Kernel Total Exec time: 48 | Curr Crit level: 3 | Scheduled job: 3  Exec time: 4  Rem exec time: 1  Deadline: 60  
+Kernel Total Exec time: 49 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 50 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 51 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 52 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 53 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 54 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 55 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 56 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 57 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 58 | Curr Crit level: 3 | Kernel Idle 
+Kernel Total Exec time: 59 | Curr Crit level: 3 | Kernel Idle 
+Idle time of cpu = 34, busy time = 26
