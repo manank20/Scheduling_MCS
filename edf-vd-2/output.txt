@@ -1,0 +1,64 @@
+
+Total utilisation:
+0.500000  0.500000  
+0.300000  0.633333  
+x factor: 0.600000
+Schedulable
+x factor = 0.600000
+
+Taskset:
+Task 0, criticality level 0, phase 6, relative deadline 10, virtual deadline 10, WCET 3 3 
+Task 1, criticality level 0, phase 0, relative deadline 10, virtual deadline 10, WCET 2 2 
+Task 2, criticality level 1, phase 5, relative deadline 15, virtual deadline 9, WCET 3 5 
+Task 3, criticality level 1, phase 0, relative deadline 20, virtual deadline 12, WCET 2 6 
+
+Hyperperiod = 60
+
+Decision point: ARRIVAL 
+Kernel time = 0 | Crit level = 0 | Scheduling new job 1 | Scheduled job: 1  Exec time: 2  Actual exec time: 0  Deadline: 10 
+
+Decision point: COMPLETION 
+Kernel time = 2 | Crit level = 0 | Job 1 completed execution | Scheduled job: 3  Exec time: 4  Actual exec time: 0  Deadline: 12 
+
+Decision point: CRIT CHANGE 
+CRITICALITY CHANGED | Kernel time = 4 | Crit level = 1 | Scheduled job: 3  Exec time: 4  Actual exec time: 2  Deadline: 12 
+
+Decision point: ARRIVAL 
+Kernel time = 5 | Crit level = 1 | Scheduled job: 3  Exec time: 4  Actual exec time: 1  Deadline: 12 
+
+Decision point: COMPLETION 
+Kernel time = 6 | Crit level = 1 | Job 3 completed execution | Scheduled job: 2  Exec time: 4  Actual exec time: 0  Deadline: 14 
+
+Decision point: COMPLETION 
+Kernel time = 10 | Crit level = 1 | Job 2 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Kernel time = 20 | Crit level = 1 | Scheduling new job 2 | Scheduled job: 2  Exec time: 3  Actual exec time: 0  Deadline: 29 
+
+Decision point: COMPLETION 
+Kernel time = 23 | Crit level = 1 | Job 2 completed execution | Scheduled job: 3  Exec time: 4  Actual exec time: 0  Deadline: 32 
+
+Decision point: COMPLETION 
+Kernel time = 27 | Crit level = 1 | Job 3 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Kernel time = 35 | Crit level = 1 | Scheduling new job 2 | Scheduled job: 2  Exec time: 3  Actual exec time: 0  Deadline: 44 
+
+Decision point: COMPLETION 
+Kernel time = 38 | Crit level = 1 | Job 2 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Kernel time = 40 | Crit level = 1 | Scheduling new job 3 | Scheduled job: 3  Exec time: 6  Actual exec time: 0  Deadline: 52 
+
+Decision point: COMPLETION 
+Kernel time = 46 | Crit level = 1 | Job 3 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Kernel time = 50 | Crit level = 1 | Scheduling new job 2 | Scheduled job: 2  Exec time: 5  Actual exec time: 0  Deadline: 59 
+
+Decision point: COMPLETION 
+Kernel time = 55 | Crit level = 1 | Job 2 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Hyperperiod completed | Completing Scheduling
+Idle time of cpu = 24, busy time = 36
