@@ -1,0 +1,102 @@
+
+Total utilisation:
+0.966667  1.133333  
+0.000000  0.000000  
+Schedulable
+x factor = 1.00
+
+Frequency values:
+50 65 80 90 100 
+
+Taskset:
+Task 0, criticality level 0, phase 0.00, relative deadline 10.00, virtual deadline 10.00, WCET 3.000000 3.000000 
+Task 1, criticality level 0, phase 0.00, relative deadline 10.00, virtual deadline 10.00, WCET 2.000000 2.000000 
+Task 2, criticality level 0, phase 0.00, relative deadline 15.00, virtual deadline 15.00, WCET 4.000000 5.000000 
+Task 3, criticality level 0, phase 0.00, relative deadline 20.00, virtual deadline 20.00, WCET 4.000000 6.000000 
+
+Hyperperiod = 60.00
+
+Decision point: ARRIVAL 
+Scheduling new job 0 | Kernel time = 0.00 | Crit level = 0 | Freq = 100 | Scheduled job: 0  Exec time: 1.00  Actual exec time: 0.00  Deadline: 10.00 
+
+Decision point: COMPLETION 
+Kernel time = 1.00 | Crit level = 0 | Freq = 80 | Job 0 completed execution | Scheduled job: 1  Exec time: 1.25  Actual exec time: 0.00  Deadline: 10.00 
+
+Decision point: COMPLETION 
+Kernel time = 2.25 | Crit level = 0 | Freq = 50 | Job 1 completed execution | Scheduled job: 2  Exec time: 8.00  Actual exec time: 0.00  Deadline: 15.00 
+
+Decision point: ARRIVAL 
+Kernel time = 10.00 | Crit level = 0 | Freq = 100 | Scheduled job: 2  Exec time: 7.88  Actual exec time: 7.75  Deadline: 15.00 
+
+Decision point: COMPLETION 
+Kernel time = 10.12 | Crit level = 0 | Freq = 100 | Job 2 completed execution | Scheduled job: 3  Exec time: 4.00  Actual exec time: 0.00  Deadline: 20.00 
+
+Decision point: COMPLETION 
+Kernel time = 14.12 | Crit level = 0 | Freq = 100 | Job 3 completed execution | Scheduled job: 0  Exec time: 1.00  Actual exec time: 0.00  Deadline: 20.00 
+
+Decision point: ARRIVAL 
+Kernel time = 15.00 | Crit level = 0 | Freq = 80 | Scheduled job: 0  Exec time: 1.03  Actual exec time: 0.88  Deadline: 20.00 
+
+Decision point: COMPLETION 
+Kernel time = 15.16 | Crit level = 0 | Freq = 65 | Job 0 completed execution | Scheduled job: 1  Exec time: 0.77  Actual exec time: 0.00  Deadline: 20.00 
+
+Decision point: COMPLETION 
+Kernel time = 15.93 | Crit level = 0 | Freq = 50 | Job 1 completed execution | Scheduled job: 2  Exec time: 4.00  Actual exec time: 0.00  Deadline: 30.00 
+
+Decision point: COMPLETION 
+Kernel time = 19.93 | Crit level = 0 | Freq = 50 | Job 2 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Scheduling new job 0 | Kernel time = 20.00 | Crit level = 0 | Freq = 80 | Scheduled job: 0  Exec time: 0.62  Actual exec time: 0.00  Deadline: 30.00 
+
+Decision point: COMPLETION 
+Kernel time = 20.62 | Crit level = 0 | Freq = 50 | Job 0 completed execution | Scheduled job: 1  Exec time: 1.00  Actual exec time: 0.00  Deadline: 30.00 
+
+Decision point: COMPLETION 
+Kernel time = 21.62 | Crit level = 0 | Freq = 50 | Job 1 completed execution | Scheduled job: 3  Exec time: 3.00  Actual exec time: 0.00  Deadline: 40.00 
+
+Decision point: COMPLETION 
+Kernel time = 24.62 | Crit level = 0 | Freq = 50 | Job 3 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Scheduling new job 0 | Kernel time = 30.00 | Crit level = 0 | Freq = 90 | Scheduled job: 0  Exec time: 1.67  Actual exec time: 0.00  Deadline: 40.00 
+
+Decision point: COMPLETION 
+Kernel time = 31.67 | Crit level = 0 | Freq = 65 | Job 0 completed execution | Scheduled job: 1  Exec time: 1.54  Actual exec time: 0.00  Deadline: 40.00 
+
+Decision point: COMPLETION 
+Kernel time = 33.21 | Crit level = 0 | Freq = 50 | Job 1 completed execution | Scheduled job: 2  Exec time: 2.00  Actual exec time: 0.00  Deadline: 45.00 
+
+Decision point: COMPLETION 
+Kernel time = 35.21 | Crit level = 0 | Freq = 50 | Job 2 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Scheduling new job 0 | Kernel time = 40.00 | Crit level = 0 | Freq = 80 | Scheduled job: 0  Exec time: 1.25  Actual exec time: 0.00  Deadline: 50.00 
+
+Decision point: COMPLETION 
+Kernel time = 41.25 | Crit level = 0 | Freq = 50 | Job 0 completed execution | Scheduled job: 1  Exec time: 1.00  Actual exec time: 0.00  Deadline: 50.00 
+
+Decision point: COMPLETION 
+Kernel time = 42.25 | Crit level = 0 | Freq = 50 | Job 1 completed execution | Scheduled job: 3  Exec time: 4.00  Actual exec time: 0.00  Deadline: 60.00 
+
+Decision point: ARRIVAL 
+Kernel time = 45.00 | Crit level = 0 | Freq = 50 | Scheduled job: 3  Exec time: 4.00  Actual exec time: 2.75  Deadline: 60.00 
+
+Decision point: COMPLETION 
+Kernel time = 46.25 | Crit level = 0 | Freq = 65 | Job 3 completed execution | Scheduled job: 2  Exec time: 2.31  Actual exec time: 0.00  Deadline: 60.00 
+
+Decision point: COMPLETION 
+Kernel time = 48.56 | Crit level = 0 | Freq = 50 | Job 2 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Scheduling new job 0 | Kernel time = 50.00 | Crit level = 0 | Freq = 90 | Scheduled job: 0  Exec time: 0.56  Actual exec time: 0.00  Deadline: 60.00 
+
+Decision point: COMPLETION 
+Kernel time = 50.56 | Crit level = 0 | Freq = 65 | Job 0 completed execution | Scheduled job: 1  Exec time: 0.77  Actual exec time: 0.00  Deadline: 60.00 
+
+Decision point: COMPLETION 
+Kernel time = 51.32 | Crit level = 0 | Freq = 100 | Job 1 completed execution | No job to execute | Kernel idle 
+
+Decision point: ARRIVAL 
+Hyperperiod completed | Completing Scheduling
+Idle time of cpu = 20.36, busy time = 39.64

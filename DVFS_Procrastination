@@ -1,0 +1,23 @@
+procrastination - shutting down processor to maximize idle duration by putting all jobs on other side.
+
+Tradeoff between DVFS and procrastination. 
+In procrastination, all remaining tasks execute at highest frequency available. Defer tasks till the end. 
+
+Procrastination in multiple core
+
+Implement procrastination with DVFS in unicore for now.
+Procrastination - done when the processor idle time is greater than a threshold.
+
+Implement for all tasks in LO mode and HI tasks in HI mode separately. Think about system change later. 
+
+Look for DVFS papers in real time systems. 
+
+Insert all jobs in ready queue at the timer expiry of kernel.
+
+The timer expiry of kernel will be the latest deadline - WCET of jobs arrived before it.
+
+Global queue for all low criticality tasks. Implement for more than 2 criticality levels.
+
+
+--> Divide the tasks into two groups - low period and high period. Depending on the value of 2P-2E. If greater than shutdown threshold, it is high period, otherwise it is low period. In the two subgroups, impose all the criticality constraints applicable (every core should have atleast one task of each criticality level). Find the subset of cores to which all low period tasks can be allocated and if any more space is free, allocate high period tasks and then find the next subset to allocate the high period tasks. Subset of cores = ceil(utilisation of low period tasks).
+--> When a core goes for shutdown, migrate all the tasks of this core to some other core. The tasks to be migrated are generally of criticality level 0 and 1. Calculate the procrastination interval after migrating these jobs. 

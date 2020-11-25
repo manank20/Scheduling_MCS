@@ -1,0 +1,13 @@
+7
+0 40 0 9.4 9.4
+0 50 0 15 15
+0 60 0 10 10
+0 80 0 15 19
+0 100 1 10 15
+0 120 1 10 20
+0 140 1 15 25
+
+Input format for the tasks:
+The first line contains the number of tasks.
+In each subsequent line, the parameters of each task is follows:
+    Phase, Relative deadline, Criticality level, WCET for each criticality level

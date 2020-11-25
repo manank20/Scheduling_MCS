@@ -1,0 +1,35 @@
+PROCRASTINATION SCHEDULING FOR UNICORE (ONLY LOW CRITICALITY LEVEL)
+
+For compiling and executing the program, run the commands.sh file. 
+./commands.sh
+
+This will execute the makefile, run the program and store the output in output.txt
+
+Files in the zip file:
+1) input.txt: 
+    Contains the task set.
+    The first line contains the number of tasks.
+    Each subsequent line contains the parameters of each task which are:
+    Phase, Relative deadline, Criticality level, WCET for each criticality level
+
+2)output.txt:
+    Contains the output of the scheduling. Each line will give the information about:
+    The type of decision point, 
+    Kernel's total execution time, Kernel's current criticality level, The currently executing job, its total execution time, its actual execution time and its absolute deadline.
+
+3)data_structures.h: 
+    Contains the information about ADTs used. The ADTs used are:
+    task, task_set_struct, job, job_queue_struct, kernel_struct, decision_struct, frt_list_struct
+
+4)functions.h:
+    Contains the information about the global functions. The global functions used are:
+    get_taskset, initialize_kernel, edf_vd_scheduler
+
+5)functions.c:
+    Contains the functions required for the offline preprocessing phase and runtime scheduling of the taskset.
+
+6)driver.c: 
+    Contains the driver code to run the program. The user is responsible for:
+    initializing the taskset using get_taskset function
+    initializing the kernel using initialize_kernel function
+    running the edf_vd_scheduler function to schedule the taskset.

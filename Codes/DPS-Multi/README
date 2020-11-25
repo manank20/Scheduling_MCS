@@ -1,0 +1,61 @@
+PROCRASTINATION SCHEDULING FOR MULTI-CRITICALITY SYSTEMS IN A MULTI-CORE ENVIRONMENT.
+
+For compiling and executing the program, run the commands.sh file. 
+./commands.sh
+
+This will execute the makefile, run the program and store the output in output.txt
+
+Files in the zip file:
+1) commands.sh:
+    Contains the commands needed for executing the makefile, run the program and store the output in output.txt. After successfully running the program, it will remove all the .o files and executable.
+
+2) input.txt: 
+    Contains the task set.
+    The first line contains the number of tasks.
+    Each subsequent line contains the parameters of each task which are:
+    Phase, Relative deadline, Criticality level, WCET for each criticality level
+
+3) output.txt:
+    Contains the output of the scheduling. 
+    1. In the start, information about allocation of tasks to cores will be printed.
+    2. After this, information about each core (its x factor) and the taskset will be printed.
+    3. After this, each line will give information about:
+        a. The type of decision point (ARRIVAL, COMPLETION, CRIT_CHANGE, TIMER_EXPIRY).
+        b.  i. The currently executing core no
+            ii. The total time elapsed for the core
+            iii. The current criticality level
+            iv. The currently executing job
+            v. Its total execution time
+            vi. The time for which it has executed
+            vii. Its WCET_counter (required for checking whether criticality change is needed)
+            viii. Its absolute deadline.
+
+4) data_structures.h: 
+    Contains the information about ADTs used. The ADTs used are:
+    a. Structure for task
+    b. Structure for taskset containing list of all tasks
+    c. Structure for a job
+    d. Structure for a job queue containing list of all jobs.
+    e. Structure for a core
+    f. Structure for a processor containing list of all cores.
+    g. Structure for the decision.
+
+5) auxiliary_functions.h and auxiliary_functions.c:
+    These two files contains the helper functions needed while scheduling. 
+
+6) check_functions.h and check_functions.c:
+    These two files contains the functions needed for checking the schedulability of the taskset. If the taskset is schedulable, it returns the x factor for the taskset.
+
+7) processor_functions.h and processor_functions.c:
+    These two files contains the functions for initialization of the processor and allotment of tasks to each core in the processor.
+    The allotment of tasks is done in such a way that each core will have high criticality tasks with a maximum utilisation of 70%.
+
+8) scheduler_functions.h and scheduler_functions.c:
+    These two files contains the functions needed for scheduling the taskset. The scheduling will be done for all cores simultaneously by finding the earliest decision point among all cores.
+    Each core will have a separate ready queue which will contain the jobs ready for execution. 
+
+9)driver.c: 
+    Contains the driver code to run the program. The user is responsible for:
+    1. Initializing the taskset using get_taskset function
+    2. Initializing the processor using the initialize_processor function.
+    3. Running the runtime_scheduler function to schedule the taskset.
