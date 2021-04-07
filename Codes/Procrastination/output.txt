@@ -1,0 +1,140 @@
+
+Total utilisation:
+0.828571  0.828571  
+0.000000  0.000000  
+Schedulable
+x factor = 1.00
+
+Procrastination lengths at each criticality level
+Task: 0, Procrastination lengths: 1.714286 
+Task: 1, Procrastination lengths: 1.714286 
+
+
+Taskset:
+Task 0, criticality level 0, phase 0.00, relative deadline 7.00, virtual deadline 7.00, WCET 3.000000 3.000000 
+Task 1, criticality level 0, phase 0.00, relative deadline 10.00, virtual deadline 10.00, WCET 4.000000 4.000000 
+
+Hyperperiod = 70.00
+
+Decision point: ARRIVAL, Decision time: 0.00 
+Kernel time = 0.00 | Crit level = 0 | Scheduled job: 0  Exec time: 3.00  Actual exec time: 0.00  Deadline: 7.00
+
+Decision point: COMPLETION, Decision time: 3.00 
+Kernel time = 3.00 | Crit level = 0 | Job 0 completed execution | Scheduled job: 1  Exec time: 2.00  Actual exec time: 0.00  Deadline: 10.00
+
+Decision point: COMPLETION, Decision time: 5.00 
+Kernel time = 5.00 | Crit level = 0 | Job 1 completed execution | No job to execute | Putting kernel to sleep
+
+Decision point: ARRIVAL, Decision time: 7.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: TIMER EXPIRE, Decision time: 8.71 
+Kernel time = 8.71 | Crit level = 0 | Timer expired. Waking up scheduler | Scheduled job: 0  Exec time: 3.00  Actual exec time: 0.00  Deadline: 14.00
+
+Decision point: ARRIVAL, Decision time: 10.00 
+Kernel time = 10.00 | Crit level = 0 | Scheduled job: 0  Exec time: 3.00  Actual exec time: 1.29  Deadline: 14.00
+
+Decision point: COMPLETION, Decision time: 11.71 
+Kernel time = 11.71 | Crit level = 0 | Job 0 completed execution | Scheduled job: 1  Exec time: 4.00  Actual exec time: 0.00  Deadline: 20.00
+
+Decision point: ARRIVAL, Decision time: 14.00 
+Kernel time = 14.00 | Crit level = 0 | Scheduled job: 1  Exec time: 4.00  Actual exec time: 2.29  Deadline: 20.00
+
+Decision point: COMPLETION, Decision time: 15.71 
+Kernel time = 15.71 | Crit level = 0 | Job 1 completed execution | Scheduled job: 0  Exec time: 2.00  Actual exec time: 0.00  Deadline: 21.00
+
+Decision point: COMPLETION, Decision time: 17.71 
+Kernel time = 17.71 | Crit level = 0 | Job 0 completed execution | No job to execute | Putting kernel to sleep
+
+Decision point: ARRIVAL, Decision time: 20.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: ARRIVAL, Decision time: 21.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: TIMER EXPIRE, Decision time: 21.71 
+Kernel time = 21.71 | Crit level = 0 | Timer expired. Waking up scheduler | Scheduled job: 0  Exec time: 3.00  Actual exec time: 0.00  Deadline: 28.00
+
+Decision point: COMPLETION, Decision time: 24.71 
+Kernel time = 24.71 | Crit level = 0 | Job 0 completed execution | Scheduled job: 1  Exec time: 3.00  Actual exec time: 0.00  Deadline: 30.00
+
+Decision point: COMPLETION, Decision time: 27.71 
+Kernel time = 27.71 | Crit level = 0 | Job 1 completed execution | No job to execute | Putting kernel to sleep
+
+Decision point: ARRIVAL, Decision time: 28.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: TIMER EXPIRE, Decision time: 29.71 
+Kernel time = 29.71 | Crit level = 0 | Timer expired. Waking up scheduler | Scheduled job: 0  Exec time: 1.00  Actual exec time: 0.00  Deadline: 35.00
+
+Decision point: ARRIVAL, Decision time: 30.00 
+Kernel time = 30.00 | Crit level = 0 | Scheduled job: 0  Exec time: 1.00  Actual exec time: 0.29  Deadline: 35.00
+
+Decision point: COMPLETION, Decision time: 30.71 
+Kernel time = 30.71 | Crit level = 0 | Job 0 completed execution | Scheduled job: 1  Exec time: 2.00  Actual exec time: 0.00  Deadline: 40.00
+
+Decision point: COMPLETION, Decision time: 32.71 
+Kernel time = 32.71 | Crit level = 0 | Job 1 completed execution | No job to execute | Putting kernel to sleep
+
+Decision point: ARRIVAL, Decision time: 35.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: TIMER EXPIRE, Decision time: 36.71 
+Kernel time = 36.71 | Crit level = 0 | Timer expired. Waking up scheduler | Scheduled job: 0  Exec time: 1.00  Actual exec time: 0.00  Deadline: 42.00
+
+Decision point: COMPLETION, Decision time: 37.71 
+Kernel time = 37.71 | Crit level = 0 | Job 0 completed execution | No job to execute | Putting kernel to sleep
+
+Decision point: ARRIVAL, Decision time: 40.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: TIMER EXPIRE, Decision time: 41.71 
+Kernel time = 41.71 | Crit level = 0 | Timer expired. Waking up scheduler | Scheduled job: 1  Exec time: 3.00  Actual exec time: 0.00  Deadline: 50.00
+
+Decision point: ARRIVAL, Decision time: 42.00 
+Kernel time = 42.00 | Crit level = 0 | Preempt current job | Scheduled job: 0  Exec time: 2.00  Actual exec time: 0.00  Deadline: 49.00
+
+Decision point: COMPLETION, Decision time: 44.00 
+Kernel time = 44.00 | Crit level = 0 | Job 0 completed execution | Scheduled job: 1  Exec time: 3.00  Actual exec time: 0.29  Deadline: 50.00
+
+Decision point: COMPLETION, Decision time: 46.71 
+Kernel time = 46.71 | Crit level = 0 | Job 1 completed execution | No job to execute | Putting kernel to sleep
+
+Decision point: ARRIVAL, Decision time: 49.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: ARRIVAL, Decision time: 50.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: TIMER EXPIRE, Decision time: 50.71 
+Kernel time = 50.71 | Crit level = 0 | Timer expired. Waking up scheduler | Scheduled job: 0  Exec time: 3.00  Actual exec time: 0.00  Deadline: 56.00
+
+Decision point: COMPLETION, Decision time: 53.71 
+Kernel time = 53.71 | Crit level = 0 | Job 0 completed execution | Scheduled job: 1  Exec time: 4.00  Actual exec time: 0.00  Deadline: 60.00
+
+Decision point: ARRIVAL, Decision time: 56.00 
+Kernel time = 56.00 | Crit level = 0 | Scheduled job: 1  Exec time: 4.00  Actual exec time: 2.29  Deadline: 60.00
+
+Decision point: COMPLETION, Decision time: 57.71 
+Kernel time = 57.71 | Crit level = 0 | Job 1 completed execution | Scheduled job: 0  Exec time: 1.00  Actual exec time: 0.00  Deadline: 63.00
+
+Decision point: COMPLETION, Decision time: 58.71 
+Kernel time = 58.71 | Crit level = 0 | Job 0 completed execution | No job to execute | Putting kernel to sleep
+
+Decision point: ARRIVAL, Decision time: 60.00 
+Processor in SLEEP. Procrastinating jobs
+
+Decision point: TIMER EXPIRE, Decision time: 61.71 
+Kernel time = 61.71 | Crit level = 0 | Timer expired. Waking up scheduler | Scheduled job: 1  Exec time: 3.00  Actual exec time: 0.00  Deadline: 70.00
+
+Decision point: ARRIVAL, Decision time: 63.00 
+Kernel time = 63.00 | Crit level = 0 | Scheduled job: 1  Exec time: 3.00  Actual exec time: 1.29  Deadline: 70.00
+
+Decision point: COMPLETION, Decision time: 64.71 
+Kernel time = 64.71 | Crit level = 0 | Job 1 completed execution | Scheduled job: 0  Exec time: 3.00  Actual exec time: 0.00  Deadline: 70.00
+
+Decision point: COMPLETION, Decision time: 67.71 
+Kernel time = 67.71 | Crit level = 0 | Job 0 completed execution | No job to execute | Putting kernel to sleep
+
+Hyperperiod completed | Completing Scheduling
+Idle time of cpu = 27.00, busy time = 43.00

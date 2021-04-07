@@ -1,0 +1,51 @@
+1. Energy consumption is directly proportional to square of voltage and frequency.
+2. In addition to DVFS technique, if applications are not time-critical, we can consider minimizing the number of used processors by taking advantage of the idle processor time among the running tasks in parallel to increase the resource utilization. Users may need to tolerate a little delay of execution for decreasing system energy consumption.
+
+
+Real Time DVFS:
+The average computational throughput is often much lower than the peak computational capacity needed for adequate performance. 
+In order to meet peak computational loads, the processor is operated at its normal voltage and frequency (which is also its maximum frequency). When the load is lower, the operating frequency is reduced to meet the computational requirements.
+Typical DVS algorithm not suitable for real time applications because the task can miss its deadline.
+
+Scaling the operating frequency by a factor a (0 < a < 1) effectively results in the worst-case computation time needed by a task to be scaled by a factor l/a, while the desired period (and deadline) remains unaffected.
+
+Schedulability test for edf under new frequency:
+Sum of utilisations <= alpha
+
+Cycle conserving EDF (CC-EDF)
+When a task is released for its next invocation, we cannot know how much computation it will actually require, so we must make the conservative assumption that it will need its specified worst-case processor time. When the task completes, we can compare the actual processor cycles used to the worst-case specification. Any unused cycles that were allotted to the task would normally (or eventually) be wasted, idling the processor. Instead of idling for extra processor cycles, we can devise DVS algorithms that avoid wasting cycles by reducing the operating frequency. 
+The reduced value of frequency is used until the next arrival of job. The utilisation is again computed at each decision point (arrival and completion) to find the new value of operating frequency. Therefore, at each scheduling point (task release or completion) the utilization is recomputed using the actual time for completed tasks and the specified worst case for the others, and the frequency is set appropriately. 
+
+Look ahead EDF (LA-EDF)
+We defer the work later and operate at a minimum frequency needed to complete the work. 
+In this method, we might need to increase the operating frequency later to ensure that all tasks complete before their deadlines. On the other hand, if tasks tend to use much less than their worst-case computing time allocations, the peak execution rates for deferred work may never be needed, and this heuristic will allow the system to continue operating at a low frequency and voltage while completing all tasks by their deadlines. 
+
+Implementations:
+This processor features PowerNow!, AMD's extensions that allow the processor's clock frequency and voltage to be adjusted dynamically under software control. We have also looked into a similar offering from Intel called SpeedStep [10], but this controls voltage and frequency through hardware external to the processor. 
+
+Papers to be read:
+1. Energy efficient DVFS scheduling for mixed-criticality systems - Pengcheng Huang, Pratyush Kumar, Georgia Giannopoulou, Lothar Thiele
+
+2. A Dynamic Power-Aware Scheduling of Mixed-Criticality Real-Time Systems - Ijaz Ali, Jun-ho Seo, Kyong Hoon Kim
+
+3. Exploring Energy Saving for Mixed-Criticality Systems on Multi-Cores - Sujay Narayana, Pengcheng Huang, Georgia Giannopoulou, Lothar Thiele, R. Venkatesha Prasad
+
+4. The Improved Earliest Deadline First with Virtual Deadlines Mixed-Criticality Scheduling Algorithm - Xuejing Zhao, Yehua Wei, Wenjia Li
+
+5. Work-in-Progress: Precise Scheduling of Mixed-Criticality Tasks by Varying Processor Speed - Sai Sruti, Ashik Ahmed Bhuiyan, Zhishan Guo
+
+
+Implement CC-EDF and LA-EDF for EDF. Then, move on to EDF-VD.
+
+
+
+DVFS with MCS:
+--> Processor frequency in range [fmin, fmax]. The tasks WCETS measured with respect to base frequency fb.
+--> C(LO)fb/f = LO WCET at f.
+--> Speedup when criticality change occurs. Run HI criticality tasks at max frequency. Run LO criticality tasks and HI criticality tasks at LO WCET at some fixed frequency fi < fmax.
+
+--> For all LO tasks, find a f(LO) at which the tasks will run. 
+--> For all HI tasks, one frequency for LO criticality and one frequency for HI criticality. 
+--> Choice of x critical to minimizing the energy requirements.
+
+--> To minimize the energy requirements, all HI criticality tasks should run at same frequency and all LO criticality tasks should run at same frequency. 
