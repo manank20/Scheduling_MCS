@@ -1116,9 +1116,6 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
         }
         fprintf(output_file, "____________________________________________________________________________________________________\n\n");
     }
-
-    fprintf(output_file, "Discarded job list\n");
-    print_job_list(discarded_queue->job_list_head);
     return;
 }
 

@@ -26,6 +26,10 @@ extern processor_struct *initialize_processor();
         Output: If the number of cores is sufficient and all the tasks were allocated to the cores, then it will return 1 to indicate success.
                 Else it will return 0.
 */
+<<<<<<< HEAD
 extern int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *processor);
+=======
+extern int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *processor, FILE *output_file);
+>>>>>>> 0de5f77143f610fa995bda21a9284e37c5c169e1
 
 #endif

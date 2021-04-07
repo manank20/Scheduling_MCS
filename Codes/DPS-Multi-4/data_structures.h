@@ -8,7 +8,6 @@
 #include <math.h>
 
 #define MAX_CRITICALITY_LEVELS 4
-
 #define ARRIVAL 0
 #define COMPLETION 1
 #define TIMER_EXPIRE 2
