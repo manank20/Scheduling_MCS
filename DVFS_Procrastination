@@ -34,3 +34,9 @@ Global queue for all low criticality tasks. Implement for more than 2 criticalit
 
 
 --> First try to allocate the discarded jobs allocated to this core in the ready queue. Then, check the discarded queue and check if any other jobs can be allocated or not. If the core is going for shutdown, don't accommodate any discarded jobs and let the other cores accommodate them.
+
+
+Interesting things observed:
+1. If no task is allocated to a core, should it accommodate the discarded jobs, execute it and go in shutdown again?
+2. When there is a crit change, should a core which is in shutdown try to accommodate jobs from discarded queue?
+3. When updating the job arrivals in the ready_queue, accommodate from the highest to lowest criticality_level.
