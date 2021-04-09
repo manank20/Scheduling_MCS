@@ -387,7 +387,7 @@ void remove_jobs_from_ready_queue(job_queue_struct **ready_queue, job_queue_stru
         (*ready_queue)->num_jobs--;
         // free(free_job);
         free_job->next = NULL;
-        fprintf(output_file, "Job %d,%d inserted in discarded queue\n", free_job->task_number, free_job->job_number);
+        // fprintf(output_file, "Job %d,%d inserted in discarded queue\n", free_job->task_number, free_job->job_number);
         insert_job_in_discarded_queue(discarded_queue, free_job, task_list);
     }
 
@@ -404,7 +404,7 @@ void remove_jobs_from_ready_queue(job_queue_struct **ready_queue, job_queue_stru
             temp->next = temp->next->next;
             (*ready_queue)->num_jobs--;
             // free(free_job);
-            fprintf(output_file, "Job %d,%d inserted in discarded queue\n", free_job->task_number, free_job->job_number);
+            // fprintf(output_file, "Job %d,%d inserted in discarded queue\n", free_job->task_number, free_job->job_number);
             free_job->next = NULL;
             insert_job_in_discarded_queue(discarded_queue, free_job, task_list);
         }
@@ -433,7 +433,7 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
     if ((*discarded_queue)->num_jobs == 0)
         return;
 
-    fprintf(output_file, "Accommodate discarded jobs in ready queue of core %d\n", core_no);
+    // fprintf(output_file, "Accommodate discarded jobs in ready queue of core %d\n", core_no);
 
     //First try to accommodate the jobs belonging to this core.
     while ((*discarded_queue)->num_jobs != 0 && task_set->task_list[(*discarded_queue)->job_list_head->task_number].core == core_no)
@@ -448,7 +448,7 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
             (*discarded_queue)->job_list_head = (*discarded_queue)->job_list_head->next;
             (*discarded_queue)->num_jobs--;
             discarded_job->next = NULL;
-            fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
+            // fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
             insert_job_in_ready_queue(ready_queue, discarded_job);
         }
         else
@@ -475,7 +475,7 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
                 temp->next = temp->next->next;
                 ready_job->next = NULL;
                 (*discarded_queue)->num_jobs--;
-                fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", temp->task_number, temp->job_number, core_no);
+                // fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", temp->task_number, temp->job_number, core_no);
                 insert_job_in_ready_queue(ready_queue, ready_job);
             }
             else
@@ -505,7 +505,7 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
             (*discarded_queue)->job_list_head = (*discarded_queue)->job_list_head->next;
             (*discarded_queue)->num_jobs--;
             discarded_job->next = NULL;
-            fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
+            // fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
             insert_job_in_ready_queue(ready_queue, discarded_job);
         }
         else
@@ -530,7 +530,7 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
             temp->next = temp->next->next;
             ready_job->next = NULL;
             (*discarded_queue)->num_jobs--;
-            fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", temp->task_number, temp->job_number, core_no);
+            // fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", temp->task_number, temp->job_number, core_no);
             insert_job_in_ready_queue(ready_queue, ready_job);
         }
         else
@@ -1050,9 +1050,9 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                     }
 
                     if(processor->cores[num_core].ready_queue->num_jobs != 0){
-                        fprintf(output_file, "Ready queue of core %d before removal\n", num_core);
-                        print_job_list(processor->cores[num_core].ready_queue->job_list_head);
-                        fprintf(output_file, "Core: %d, Removing low crit jobs from ready queue\n", num_core);
+                        // fprintf(output_file, "Ready queue of core %d before removal\n", num_core);
+                        // print_job_list(processor->cores[num_core].ready_queue->job_list_head);
+                        // fprintf(output_file, "Core: %d, Removing low crit jobs from ready queue\n", num_core);
                         remove_jobs_from_ready_queue(&processor->cores[num_core].ready_queue, &discarded_queue, task_list, processor->crit_level, processor->cores[num_core].threshold_crit_lvl);
                     }
 
@@ -1060,17 +1060,9 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                         insert_discarded_jobs_in_ready_queue(&(processor->cores[num_core].ready_queue), &discarded_queue, task_set, num_core, processor->crit_level, processor->cores[num_core].total_time);
 
                     if(processor->cores[num_core].ready_queue->num_jobs != 0) {
-                        fprintf(output_file, "Ready queue of core %d after removal\n", num_core);
-                        print_job_list(processor->cores[num_core].ready_queue->job_list_head);
+                        // fprintf(output_file, "Ready queue of core %d after removal\n", num_core);
+                        // print_job_list(processor->cores[num_core].ready_queue->job_list_head);
                         schedule_new_job(&processor->cores[num_core], processor->cores[num_core].ready_queue, task_set);
-                        fprintf(output_file, "Core: %d, Scheduled job: %d,%d  Exec time: %.2lf  Rem exec time: %.2lf  WCET_counter: %.2lf  Deadline: %.2lf\n", 
-                                num_core,
-                                processor->cores[num_core].curr_exec_job->task_number, 
-                                processor->cores[num_core].curr_exec_job->job_number, 
-                                processor->cores[num_core].curr_exec_job->execution_time, 
-                                processor->cores[num_core].curr_exec_job->rem_exec_time, 
-                                processor->cores[num_core].WCET_counter, 
-                                processor->cores[num_core].curr_exec_job->absolute_deadline);
                     }
                 }
             }
