@@ -40,3 +40,4 @@ Interesting things observed:
 1. If no task is allocated to a core, should it accommodate the discarded jobs, execute it and go in shutdown again?
 2. When there is a crit change, should a core which is in shutdown try to accommodate jobs from discarded queue?
 3. When updating the job arrivals in the ready_queue, accommodate from the highest to lowest criticality_level.
+4. Due to shutdown, the discarded jobs that had arrived during the interval may miss their deadline.
