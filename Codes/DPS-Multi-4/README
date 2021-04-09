@@ -46,8 +46,8 @@ Files in the zip file:
 6) check_functions.h and check_functions.c:
     These two files contains the functions needed for checking the schedulability of the taskset. If the taskset is schedulable, it returns the x factor for the taskset.
 
-7) processor_functions.h and processor_functions.c:
-    These two files contains the functions for initialization of the processor and allotment of tasks to each core in the processor.
+7) allocation_functions.h and allocation_functions.c:
+    These two files contains the functions for initialization of the processor and allocation of tasks to each core in the processor.
     The allotment of tasks is done in such a way that each core will have high criticality tasks with a maximum utilisation of 70%.
 
 8) scheduler_functions.h and scheduler_functions.c:

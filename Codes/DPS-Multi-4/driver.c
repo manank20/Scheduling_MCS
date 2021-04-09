@@ -1,6 +1,6 @@
 #include "data_structures.h"
 #include "scheduler_functions.h"
-#include "processor_functions.h"
+#include "allocation_functions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

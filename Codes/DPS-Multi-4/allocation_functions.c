@@ -1,4 +1,4 @@
-#include "processor_functions.h"
+#include "allocation_functions.h"
 #include "check_functions.h"
 #include "auxiliary_functions.h"
 
@@ -122,6 +122,8 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
 {
     int i;
     double MAX_UTIL[MAX_CRITICALITY_LEVELS], total_util[processor->total_cores][MAX_CRITICALITY_LEVELS];
+
+    //Maximum utilisation per criticality level allowed for each core.
     MAX_UTIL[0] = 1.00, MAX_UTIL[1] = 0.6, MAX_UTIL[2] = 0.5, MAX_UTIL[3] = 0.5;
 
     int crit_level, num_core;

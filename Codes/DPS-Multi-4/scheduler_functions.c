@@ -2,7 +2,7 @@
 #include "data_structures.h"
 #include "auxiliary_functions.h"
 #include "check_functions.h"
-#include "processor_functions.h"
+#include "allocation_functions.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -79,7 +79,15 @@ double find_superhyperperiod(task_set_struct *task_set)
 }
 
 /*
+    Preconditions:
+        Input: {pointer to taskset, pointer to ready queue, the current crit level, the core number, the curr time and the deadline}
+                task_set!=NULL
+                ready_queue!=NULL
+
     Function to find the maximum slack between the discarded job's deadline and the current time.
+
+    Postconditions:
+        Output: {The maximum slack available between the current time and the deadline for the given core}
 */
 double find_max_slack(task_set_struct *task_set, int crit_level, int core_no, double deadline, double curr_time, job_queue_struct *ready_queue)
 {
@@ -167,11 +175,14 @@ decision_struct find_decision_point(task_set_struct *task_set, processor_struct 
 {
 
     double arrival_time, completion_time, expiry_time, WCET_counter;
-    double min_arrival_time = INT_MAX, min_completion_time = INT_MAX, min_expiry_time = INT_MAX, min_WCET_counter = INT_MAX;
-    int min_arrival_core, min_completion_core, min_expiry_core, min_WCET_core;
+    double min_time;
     decision_struct decision;
     double decision_time = INT_MAX;
+    int decision_core;
+    int decision_point;
     int i;
+
+    decision.core_no = -1;
 
     // fprintf(output_file, "Finding decision point\n");
     for (i = 0; i < processor->total_cores; i++)
@@ -198,66 +209,31 @@ decision_struct find_decision_point(task_set_struct *task_set, processor_struct 
             expiry_time = processor->cores[i].next_invocation_time;
         }
 
-        if (min_arrival_time > arrival_time)
-        {
-            min_arrival_time = arrival_time;
-            min_arrival_core = i;
-        }
+        min_time = min(min(min(arrival_time, completion_time), WCET_counter), expiry_time);
+        if(decision_time > min_time) {
+            decision_time = min_time;
+            decision_core = i;
 
-        if (min_completion_time > completion_time)
-        {
-            min_completion_time = completion_time;
-            min_completion_core = i;
+            if(decision_time == completion_time) {
+                decision_point = COMPLETION;
+            }
+            else if(decision_time == expiry_time) {
+                decision_point = TIMER_EXPIRE;
+            }
+            else if(decision_time == WCET_counter) {
+                decision_point = CRIT_CHANGE;
+            }
+            else if(decision_time == arrival_time) {
+                decision_point = ARRIVAL;
+            }
         }
-
-        if (min_WCET_counter > WCET_counter)
-        {
-            min_WCET_counter = WCET_counter;
-            min_WCET_core = i;
-        }
-
-        if (min_expiry_time > expiry_time)
-        {
-            min_expiry_time = expiry_time;
-            min_expiry_core = i;
-        }
-
         // fprintf(output_file, "Core: %d, Arrival time: %.2lf, Completion time: %.2lf, Timer expiry: %.2lf, WCET counter: %.2lf\n", i, arrival_time, completion_time, expiry_time, WCET_counter);
     
     }
 
-    decision_time = min(min(min(min_arrival_time, min_completion_time), min_WCET_counter), min_expiry_time);
-
-    //If arrival time = completion time or arrival time = wcet counter, then give preference to COMPLETION or CRIT_CHANGE.
-    if (decision_time == min_completion_time)
-    {
-        decision.decision_point = COMPLETION;
-        decision.decision_time = min_completion_time;
-        decision.core_no = min_completion_core;
-    }
-    else if (decision_time == min_expiry_time)
-    {
-        decision.decision_point = TIMER_EXPIRE;
-        decision.decision_time = min_expiry_time;
-        decision.core_no = min_expiry_core;
-    }
-    else if (decision_time == min_WCET_counter)
-    {
-        decision.decision_point = CRIT_CHANGE;
-        decision.decision_time = min_WCET_counter;
-        decision.core_no = min_WCET_core;
-    }
-    else if (decision_time == min_arrival_time)
-    {
-        decision.decision_point = ARRIVAL;
-        decision.decision_time = min_arrival_time;
-        decision.core_no = min_arrival_core;
-    }
-    else
-    {
-        decision.decision_time = decision_time;
-        decision.core_no = -1;
-    }
+    decision.core_no = decision_core;
+    decision.decision_point = decision_point;
+    decision.decision_time = decision_time;
 
     return decision;
 }
@@ -914,7 +890,7 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
 
     double super_hyperperiod, decision_time, prev_decision_time;
     decision_struct decision;
-    int decision_point, decision_core, core_no, num_core;
+    int decision_point, decision_core, num_core;
 
     task *task_list = task_set->task_list;
 
