@@ -36,13 +36,11 @@ Step 2: Repeat until end of superhyperperiod
                     core.schedule_new_job()
             else:
                 core.schedule_new_job()                 //Schedule the next job from the ready queue. 
-                core.update_WCET_counter()              //Update the WCET counter.
 
         if decision point = TIMER_EXPIRY then
             core.state = ACTIVE                         
             core.ready_queue.insert(jobs)               //Insert the jobs already arrived in the ready queue.
             core.schedule_new_job()                     //Schedule a new job from the ready queue. 
-            core.update_WCET_counter()                  //Update the WCET counter.
         
         if decision point = CRIT_CHANGE then
             for each core c ∈ [0,N]
@@ -50,7 +48,6 @@ Step 2: Repeat until end of superhyperperiod
                 c.insert_jobs_in_discarded_queue()
                 accommodate_discarded_jobs_in_ready_queue(c, discarded_queue)
             core.schedule_new_job()                     //schedule a new HI-criticality job in the core. 
-            core.update_WCET_counter()                  //update the WCET counter to indicate whether criticality change is needed.
 
 ------------------------------------------------------------------------------------------------------------------------
 Algorithm for finding the next decision point of the core.
