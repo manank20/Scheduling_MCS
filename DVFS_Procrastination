@@ -41,3 +41,4 @@ Interesting things observed:
 2. When there is a crit change, should a core which is in shutdown try to accommodate jobs from discarded queue?
 3. When updating the job arrivals in the ready_queue, accommodate from the highest to lowest criticality_level.
 4. Due to shutdown, the discarded jobs that had arrived during the interval may miss their deadline.
+5. When the core is going for shutdown, should the criticality of the system be reduced?

@@ -12,7 +12,6 @@ extern void print_task_list(task_set_struct *task_set);
 extern void print_job_list(job *job_list_head);
 extern void print_total_utilisation(double total_utilisation[][MAX_CRITICALITY_LEVELS]);
 extern void print_processor(processor_struct *processor);
-extern void print_hyperperiods(double *hyperperiod, int total_cores);
 extern int compare_jobs(job *A, job *B);
 extern double find_actual_execution_time(double exec_time, int task_crit_lvl, int core_crit_lvl);
 extern void set_virtual_deadlines(task_set_struct **task_set, int core_no, double x, int k);

@@ -149,16 +149,6 @@ void print_processor(processor_struct *processor)
     fprintf(output_file, "\n");
 }
 
-void print_hyperperiods(double *hyperperiod, int total_cores)
-{
-    fprintf(output_file, "\nHyperperiods of each processor: \n");
-    for (int i = 0; i < total_cores; i++)
-    {
-        fprintf(output_file, "Core: %d, hyperperiod: %.2lf\n", i, hyperperiod[i]);
-    }
-    fprintf(output_file, "\n");
-}
-
 /*
     A comparator function to check whether two jobs are equal or not.
 */

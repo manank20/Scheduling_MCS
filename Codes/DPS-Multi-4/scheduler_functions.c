@@ -3,9 +3,6 @@
 #include "auxiliary_functions.h"
 #include "check_functions.h"
 #include "allocation_functions.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 /*
     Preconditions: 
@@ -196,6 +193,10 @@ decision_struct find_decision_point(task_set_struct *task_set, processor_struct 
         {
             arrival_time = find_earliest_arrival_job(task_set, i);
         }
+        else {
+            expiry_time = processor->cores[i].next_invocation_time;
+        }
+
         if (processor->cores[i].curr_exec_job != NULL)
         {
             completion_time = processor->cores[i].curr_exec_job->completed_job_time;
@@ -203,10 +204,6 @@ decision_struct find_decision_point(task_set_struct *task_set, processor_struct 
             {
                 WCET_counter = processor->cores[i].WCET_counter;
             }
-        }
-        if (processor->cores[i].state == SHUTDOWN)
-        {
-            expiry_time = processor->cores[i].next_invocation_time;
         }
 
         min_time = min(min(min(arrival_time, completion_time), WCET_counter), expiry_time);
@@ -422,7 +419,17 @@ void remove_jobs_from_ready_queue(job_queue_struct **ready_queue, job_queue_stru
     return;
 }
 
-void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_queue_struct **discarded_queue, task_set_struct *task_set, int core_no, int curr_crit_level, double curr_time)
+/*
+    Preconditions: 
+        Input: {Pointer to ready queue, pointer to discarded queue, pointer to taskset, core number, current crit level, current time}
+
+    Purpose of the function: This function will find the maximum slack available for each job present in the discarded queue. If the slack is greater than the remaining execution time of the job, it is added to the ready queue.
+
+    Postconditions:
+        Output: {None}
+        Result: The appropriate jobs are transferred from discarded queue to ready queue.
+*/
+void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_queue_struct **discarded_queue, task_set_struct *task_set, int core_no, int curr_crit_level, double curr_time, int same_core)
 {
     job *discarded_job, *ready_job, *temp;
     double max_slack, rem_exec_time;
@@ -436,23 +443,28 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
     // fprintf(output_file, "Accommodate discarded jobs in ready queue of core %d\n", core_no);
 
     //First try to accommodate the jobs belonging to this core.
-    while ((*discarded_queue)->num_jobs != 0 && task_set->task_list[(*discarded_queue)->job_list_head->task_number].core == core_no)
+    while ((*discarded_queue)->num_jobs != 0)
     {
-        discarded_job = (*discarded_queue)->job_list_head;
-        max_slack = find_max_slack(task_set, curr_crit_level, core_no, discarded_job->absolute_deadline, curr_time, (*ready_queue));
-        rem_exec_time = discarded_job->rem_exec_time;
-        // fprintf(output_file, "Discarded job: %d, max slack: %.2lf, rem exec time: %.2lf\n", discarded_job->task_number, max_slack, rem_exec_time);
+        if(same_core == 0 || (same_core == 1 && task_set->task_list[(*discarded_queue)->job_list_head->task_number].core == core_no)) {
+            discarded_job = (*discarded_queue)->job_list_head;
+            max_slack = find_max_slack(task_set, curr_crit_level, core_no, discarded_job->absolute_deadline, curr_time, (*ready_queue));
+            rem_exec_time = discarded_job->rem_exec_time;
+            // fprintf(output_file, "Discarded job: %d, max slack: %.2lf, rem exec time: %.2lf\n", discarded_job->task_number, max_slack, rem_exec_time);
 
-        if (max_slack > rem_exec_time)
-        {
-            (*discarded_queue)->job_list_head = (*discarded_queue)->job_list_head->next;
-            (*discarded_queue)->num_jobs--;
-            discarded_job->next = NULL;
-            // fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
-            insert_job_in_ready_queue(ready_queue, discarded_job);
+            if (max_slack > rem_exec_time)
+            {
+                (*discarded_queue)->job_list_head = (*discarded_queue)->job_list_head->next;
+                (*discarded_queue)->num_jobs--;
+                discarded_job->next = NULL;
+                // fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
+                insert_job_in_ready_queue(ready_queue, discarded_job);
+            }
+            else
+            {
+                break;
+            }
         }
-        else
-        {
+        else {
             break;
         }
     }
@@ -463,7 +475,7 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
     temp = (*discarded_queue)->job_list_head;
     while (temp && temp->next)
     {
-        if (task_set->task_list[temp->task_number].core == core_no)
+        if (same_core == 0 || (same_core == 1 && task_set->task_list[temp->task_number].core == core_no))
         {
             max_slack = find_max_slack(task_set, curr_crit_level, core_no, temp->next->absolute_deadline, curr_time, (*ready_queue));
             rem_exec_time = temp->next->rem_exec_time;
@@ -489,55 +501,19 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
         }
     }
 
-    if ((*discarded_queue)->num_jobs == 0)
+    return;
+}
+
+void accommodate_discarded_jobs(job_queue_struct **ready_queue, job_queue_struct **discarded_queue, task_set_struct *task_set, int core_no, int curr_crit_level, double curr_time) {
+    //First try to accommodate discarded jobs from the same core.
+    insert_discarded_jobs_in_ready_queue(ready_queue, discarded_queue, task_set, core_no, curr_crit_level, curr_time, 1);
+    
+    if((*discarded_queue)->num_jobs == 0)
         return;
 
-    //Then, try to accommodate the rest of the jobs.
-    while ((*discarded_queue)->num_jobs != 0)
-    {
-        discarded_job = (*discarded_queue)->job_list_head;
-        max_slack = find_max_slack(task_set, curr_crit_level, core_no, discarded_job->absolute_deadline, curr_time, (*ready_queue));
-        rem_exec_time = discarded_job->rem_exec_time;
-        // fprintf(output_file, "Discarded job: %d, max slack: %.2lf, rem exec time: %.2lf\n", discarded_job->task_number, max_slack, rem_exec_time);
-
-        if (max_slack > rem_exec_time)
-        {
-            (*discarded_queue)->job_list_head = (*discarded_queue)->job_list_head->next;
-            (*discarded_queue)->num_jobs--;
-            discarded_job->next = NULL;
-            // fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
-            insert_job_in_ready_queue(ready_queue, discarded_job);
-        }
-        else
-        {
-            break;
-        }
-    }
-
-    if ((*discarded_queue)->num_jobs == 0)
-        return;
-
-    temp = (*discarded_queue)->job_list_head;
-    while (temp && temp->next)
-    {
-        max_slack = find_max_slack(task_set, curr_crit_level, core_no, temp->next->absolute_deadline, curr_time, (*ready_queue));
-        rem_exec_time = temp->next->rem_exec_time;
-        // fprintf(output_file, "Discarded job: %d, max slack: %.2lf, rem exec time: %.2lf\n", discarded_job->task_number, max_slack, rem_exec_time);
-
-        if (max_slack > rem_exec_time)
-        {
-            ready_job = temp->next;
-            temp->next = temp->next->next;
-            ready_job->next = NULL;
-            (*discarded_queue)->num_jobs--;
-            // fprintf(output_file, "Job %d,%d inserted in ready queue of core %d\n", temp->task_number, temp->job_number, core_no);
-            insert_job_in_ready_queue(ready_queue, ready_job);
-        }
-        else
-        {
-            temp = temp->next;
-        }
-    }
+    //Then, try to accommodate more jobs from the discarded queue.
+    insert_discarded_jobs_in_ready_queue(ready_queue, discarded_queue, task_set, core_no, curr_crit_level, curr_time, 0);
+    return;
 }
 
 /*
@@ -873,7 +849,7 @@ double find_procrastination_interval(double curr_time, task_set_struct *task_set
         Input: {pointer to taskset, pointer to core, pointer to output file}
 
     Purpose of the function: This function performs the scheduling of the taskset according to edf-vd. 
-                             The scheduling will be done for one hyperperiod of the tasks.
+                             The scheduling will be done for superhyperperiod of the tasks.
                              A job queue will contain the jobs which have arrived at the current time unit, sorted according to their virtual deadlines. 
                              The core will always take the head of the queue for scheduling.
                              If any job exceeds its WCET, a counter will indicate the same and the core's criticality level will change.
@@ -916,6 +892,15 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
         decision_core = decision.core_no;
 
         if(decision_time >= super_hyperperiod) {
+            for(num_core = 0; num_core < processor->total_cores; num_core++) {
+                if(processor->cores[num_core].state == SHUTDOWN || processor->cores[num_core].curr_exec_job == NULL) {
+                    processor->cores[num_core].total_idle_time += (super_hyperperiod - processor->cores[num_core].total_time);
+                }
+                else {
+                    processor->cores[num_core].curr_exec_job->rem_exec_time -= (super_hyperperiod - processor->cores[num_core].total_time);
+                }
+                processor->cores[num_core].total_time = super_hyperperiod;
+            }
             break;
         }
 
@@ -990,8 +975,9 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                     {
                         fprintf(output_file, "Procrastination interval %.2lf less than shutdown threshold | Not putting core to sleep\n", procrastionation_interval);
                         processor->cores[decision_core].state = ACTIVE;
-
-                        insert_discarded_jobs_in_ready_queue(&(processor->cores[decision_core].ready_queue), &discarded_queue, task_set, decision_core, processor->crit_level, processor->cores[decision_core].total_time);
+                        
+                        //Accommodate discarded jobs in ready queue.
+                        accommodate_discarded_jobs(&(processor->cores[decision_core].ready_queue), &discarded_queue, task_set, decision_core, processor->crit_level, processor->cores[decision_core].total_time);
                     }
                 }
             }
@@ -1038,6 +1024,8 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                     reset_virtual_deadlines(&task_set, num_core, processor->cores[num_core].threshold_crit_lvl);
                 
                 if(processor->cores[num_core].state == ACTIVE) {
+
+                    //Need the core's prevision decision time for updating the execution time of currently executing job.
                     if(num_core != decision_core)
                         core_prev_decision_time = processor->cores[num_core].total_time;
                     else
@@ -1057,7 +1045,7 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                     }
 
                     if(discarded_queue->num_jobs != 0)
-                        insert_discarded_jobs_in_ready_queue(&(processor->cores[num_core].ready_queue), &discarded_queue, task_set, num_core, processor->crit_level, processor->cores[num_core].total_time);
+                        accommodate_discarded_jobs(&(processor->cores[num_core].ready_queue), &discarded_queue, task_set, num_core, processor->crit_level, processor->cores[num_core].total_time);
 
                     if(processor->cores[num_core].ready_queue->num_jobs != 0) {
                         // fprintf(output_file, "Ready queue of core %d after removal\n", num_core);

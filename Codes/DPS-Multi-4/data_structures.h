@@ -105,19 +105,20 @@ typedef struct
 
 /*
     ADT for the core. The parameters for the core are:
+        ready_queue: The ready queue of the core.
         curr_exec_job: The job currently executed in the core.
         total_time: The total time for which the core has run.
         total_idle_time: The total time for which the core was idle.
-        curr_crit_level: The current criticality level of the core.
-        WCET_counter: The WCET counter of the currently execution job.
+        WCET_counter: The WCET counter of the currently executing job.
         frequency: The frequency at which core is running.
-        state: The current state of core. (ACTIVE or SLEEPING)
+        state: The current state of core. (ACTIVE or SHUTDOWN)
         next_invocation_time: The countdown timer for core. The core will wakeup after timer expires.
         x_factor: The factor to be used while calculating virtual deadlines.
         threshold_crit_lvl: The threshold level aboe which all tasks are considered as HI criticality and below which all tasks are considered as LO criticality.
         rem_util: The remaining utilisation of core. This is needed to check whether additional tasks can be allocated to this core.
         completed_scheduling: Flag to indicate whether this core has completed its hyperperiod.
-        shutdown: SHUTDOWN or NON-SHUTDOWN core.
+        is_shutdown: SHUTDOWN or NON-SHUTDOWN core.
+        num_tasks_allocated: The number of tasks allocated to that core.
 */
 typedef struct
 {
@@ -144,7 +145,9 @@ typedef struct
 
 /*
     ADT for the processor. 
-        It contains the total number of cores and the array of cores.
+        total_cores: Total number of cores in the processor.
+        crit_level: The current criticality level of the processor.
+        cores: List of core structs.
 */
 
 typedef struct

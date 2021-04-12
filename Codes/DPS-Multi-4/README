@@ -42,17 +42,60 @@ Files in the zip file:
 
 5) auxiliary_functions.h and auxiliary_functions.c:
     These two files contains the helper functions needed while scheduling. 
+    List of functions:
+    a. rand50
+    b. rand75
+    c. gcd
+    d. min
+    e. max
+    f. period_comparator
+    g. deadline_comparator
+    h. print_task_list
+    i. print_job_list
+    j. print_total_utilization
+    k. print_processor
+    l. compare_jobs
+    m. find_actual_execution_time
+    n. set_virtual_deadlines
+    o. reset_virtual_deadlines
 
 6) check_functions.h and check_functions.c:
     These two files contains the functions needed for checking the schedulability of the taskset. If the taskset is schedulable, it returns the x factor for the taskset.
+    List of functions:
+    a. find_total_utilization
+    b. check_schedulability
 
 7) allocation_functions.h and allocation_functions.c:
     These two files contains the functions for initialization of the processor and allocation of tasks to each core in the processor.
     The allotment of tasks is done in such a way that each core will have high criticality tasks with a maximum utilisation of 70%.
+    List of functions:
+    a. initialize_processor
+    b. allocate
+    c. allocate_tasks_to_cores
 
 8) scheduler_functions.h and scheduler_functions.c:
     These two files contains the functions needed for scheduling the taskset. The scheduling will be done for all cores simultaneously by finding the earliest decision point among all cores.
     Each core will have a separate ready queue which will contain the jobs ready for execution. 
+    List of functions:
+    a. get_taskset
+    b. find_superhyperperiod
+    c. find_max_slack
+    d. find_earliest_arrival_job
+    e. find_decision_point
+    f. insert_job_in_discarded_queue
+    g. remove_jobs_from_discarded_queue
+    h. insert_job_in_ready_queue
+    i. remove_jobs_from_ready_queue
+    j. insert_discarded_jobs_in_ready_queue
+    k. accommodate_discarded_jobs
+    l. find_job_parameters
+    m. update_job_arrivals
+    n. update_job_removal
+    o. schedule_new_job
+    p. find_job_list
+    q. find_procrastination_interval
+    r. schedule_taskset
+    s. runtime_scheduler
 
 9)driver.c: 
     Contains the driver code to run the program. The user is responsible for:
