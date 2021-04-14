@@ -150,9 +150,11 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
     for(i=0; i<total_tasks; i++)
     {
         if(task_set->task_list[i].shutdown == NON_SHUTDOWN){
+            fprintf(output_file, "%d ", i);
             non_shutdown_utilisation += task_set->task_list[i].util[task_set->task_list[i].criticality_lvl];
         }
     }
+    fprintf(output_file, "\n");
 
     int non_shutdown_cores = ceil(non_shutdown_utilisation);
 

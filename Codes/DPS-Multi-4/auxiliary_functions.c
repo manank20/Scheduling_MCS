@@ -1,13 +1,12 @@
 #include "auxiliary_functions.h"
 
-int rand50()
+int randnum()
 {
-    return rand() & 1;
-}
-
-int rand75()
-{
-    return rand50() | rand50() | rand50();
+    int num = 6;
+    int val = 0;
+    for(int i=0; i<num; i++)
+        val |= (rand() & 1);
+    return val;
 }
 
 /*Function to calculate gcd of two numbers*/
@@ -175,7 +174,7 @@ double find_actual_execution_time(double exec_time, int task_crit_lvl, int core_
     }
     else
     {
-        if (!rand75())
+        if (randnum() == 0)
         {
             exec_time += n;
         }

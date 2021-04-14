@@ -42,3 +42,4 @@ Interesting things observed:
 3. When updating the job arrivals in the ready_queue, accommodate from the highest to lowest criticality_level.
 4. Due to shutdown, the discarded jobs that had arrived during the interval may miss their deadline.
 5. When the core is going for shutdown, should the criticality of the system be reduced?
+6. When the decision time of arrival and completion is same, the priority is given to completion. At that time, it tries to insert jobs from discarded queue in ready queue and at the next decision point, will enter the arrival of next job. 

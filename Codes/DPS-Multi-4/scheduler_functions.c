@@ -604,7 +604,7 @@ void update_job_arrivals(job_queue_struct **ready_queue, job_queue_struct **disc
                             fprintf(output_file, "Discarded job | ");
                             double max_slack = find_max_slack(task_set, curr_crit_level, core_no, deadline, arrival_time, (*ready_queue));
                             fprintf(output_file, "Max slack: %.2lf, Max Exec Time: %.2lf | ", max_slack, max_exec_time);
-                            if (max_slack > max_exec_time)
+                            if (max_slack >= max_exec_time)
                             {
                                 fprintf(output_file, "Inserting in ready queue\n");
                                 insert_job_in_ready_queue(ready_queue, new_job);
