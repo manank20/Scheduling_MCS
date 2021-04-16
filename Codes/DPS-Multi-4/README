@@ -15,20 +15,18 @@ Files in the zip file:
     Each subsequent line contains the parameters of each task which are:
     Phase, Relative deadline, Criticality level, WCET for each criticality level
 
-3) output.txt:
+3) output.txt, output_*.txt:
     Contains the output of the scheduling. 
-    1. In the start, information about allocation of tasks to cores will be printed.
-    2. After this, information about each core (its x factor) and the taskset will be printed.
-    3. After this, each line will give information about:
-        a. The type of decision point (ARRIVAL, COMPLETION, CRIT_CHANGE, TIMER_EXPIRY).
-        b.  i. The currently executing core no
-            ii. The total time elapsed for the core
-            iii. The current criticality level
-            iv. The currently executing job
-            v. Its total execution time
-            vi. The time for which it has executed
-            vii. Its WCET_counter (required for checking whether criticality change is needed)
-            viii. Its absolute deadline.
+    output.txt contains the allocation of the tasks and the final processor statistics after the scheduling is done.
+    Each of output_*.txt contains the schedule for the corresponding core. For example, output_0.txt contains the schedule of core 0.
+    Each line of output_*.txt contains the following:
+    1. The decision time, point, the core and the current crit_level.
+    2.1 If the decision is ARRIVAL, then the type of jobs that have arrived (Normal / Discarded), and the queue in which it is inserted (Ready for normal, Ready / Discarded for discarded)
+    2.2 If the decision is COMPLETION, then the job that completed execution. If the ready queue is not empty, then the information about new job that is scheduled. If the ready queue is empty, the information about procrastination interval.
+    2.3 If the decision is TIMER_EXPIRY, then the information about job arrivals and the new job that is scheduled.
+    2.4 If the decision is CRIT_CHANGE, then the information about updating the ready queue and the discarded queue for each core.
+    3. Finally, if a job is scheduled, information about the scheduled job is printed.
+
 
 4) data_structures.h: 
     Contains the information about ADTs used. The ADTs used are:
@@ -43,21 +41,20 @@ Files in the zip file:
 5) auxiliary_functions.h and auxiliary_functions.c:
     These two files contains the helper functions needed while scheduling. 
     List of functions:
-    a. rand50
-    b. rand75
-    c. gcd
-    d. min
-    e. max
-    f. period_comparator
-    g. deadline_comparator
-    h. print_task_list
-    i. print_job_list
-    j. print_total_utilization
-    k. print_processor
-    l. compare_jobs
-    m. find_actual_execution_time
-    n. set_virtual_deadlines
-    o. reset_virtual_deadlines
+    a. randnum
+    b. gcd
+    c. min
+    d. max
+    e. period_comparator
+    f. deadline_comparator
+    g. print_task_list
+    h. print_job_list
+    i. print_total_utilization
+    j. print_processor
+    k. compare_jobs
+    l. find_actual_execution_time
+    m. set_virtual_deadlines
+    n. reset_virtual_deadlines
 
 6) check_functions.h and check_functions.c:
     These two files contains the functions needed for checking the schedulability of the taskset. If the taskset is schedulable, it returns the x factor for the taskset.

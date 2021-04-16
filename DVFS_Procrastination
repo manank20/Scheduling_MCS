@@ -41,5 +41,8 @@ Interesting things observed:
 2. When there is a crit change, should a core which is in shutdown try to accommodate jobs from discarded queue?
 3. When updating the job arrivals in the ready_queue, accommodate from the highest to lowest criticality_level.
 4. Due to shutdown, the discarded jobs that had arrived during the interval may miss their deadline.
-5. When the core is going for shutdown, should the criticality of the system be reduced?
+5. When the core is going for shutdown, should the criticality of the system be reduced? (MAIN)
 6. When the decision time of arrival and completion is same, the priority is given to completion. At that time, it tries to insert jobs from discarded queue in ready queue and at the next decision point, will enter the arrival of next job. 
+7. When there is a crit_change, should the procrastination intervals be re-calculated? Because the execution times were taken of a lower criticality level during calculation. (MAIN)
+8. During calculation of procrastination interval, we take the WCET of jobs and calculate the interval. Possibility of WCET getting exceeded due to which a job may miss its deadline. (MAIN)
+    Solution: Use the maximum WCET of each job instead of the WCET of current criticality level

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <time.h>
 #include <math.h>
 
@@ -27,6 +28,7 @@
 #define EXCEPTIONAL 1
 
 FILE* output_file;
+FILE* output[NUM_CORES];
 
 /*
     ADT for a task. The parameters in the task are:

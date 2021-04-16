@@ -1,9 +1,6 @@
 #include "data_structures.h"
 #include "scheduler_functions.h"
 #include "allocation_functions.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +24,18 @@ int main(int argc, char *argv[])
     processor_struct *processor = initialize_processor();
 
     //Open the output file here.
+    for(int i=0; i<NUM_CORES; i++)
+    {
+        char filename[15] = "output_";
+        char ext[2];
+        sprintf(ext, "%d", i);
+        strcat(filename, ext);
+        strcat(filename, ".txt");
+
+        output[i] = fopen(filename, "w");
+
+        fprintf(output[i], "Schedule for core %d\n", i);
+    }
     output_file = fopen(argv[2], "w");
     if (output_file == NULL)
     {
@@ -37,5 +46,9 @@ int main(int argc, char *argv[])
     runtime_scheduler(task_set, processor);
 
     fclose(task_file);
+    for(int i=0; i<NUM_CORES; i++)
+    {
+        fclose(output[i]);
+    }
     fclose(output_file);
 }

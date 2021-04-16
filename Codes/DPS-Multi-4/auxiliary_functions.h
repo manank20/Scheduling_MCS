@@ -9,7 +9,7 @@ extern double max(double a, double b);
 extern int period_comparator(const void *p, const void *q);
 extern int deadline_comparator(const void *p, const void *q);
 extern void print_task_list(task_set_struct *task_set);
-extern void print_job_list(job *job_list_head);
+extern void print_job_list(int core_no, job *job_list_head);
 extern void print_total_utilisation(double total_utilisation[][MAX_CRITICALITY_LEVELS]);
 extern void print_processor(processor_struct *processor);
 extern int compare_jobs(job *A, job *B);

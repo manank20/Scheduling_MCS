@@ -1,8 +1,3 @@
-2
-0 7 0 3 3
-0 10 0 4 4
-
-Input format for the tasks:
-The first line contains the number of tasks.
-In each subsequent line, the parameters of each task is follows:
-    Phase, Relative deadline, Criticality level, WCET for each criticality level
+version https://git-lfs.github.com/spec/v1
+oid sha256:6faae4c2920b24cfc85f66120fa7c8d62cfc3ee1e0038ebfeb18d1ce8caf9f0c
+size 242

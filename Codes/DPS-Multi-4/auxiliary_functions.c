@@ -2,7 +2,7 @@
 
 int randnum()
 {
-    int num = 6;
+    int num = 16;
     int val = 0;
     for(int i=0; i<num; i++)
         val |= (rand() & 1);
@@ -68,18 +68,19 @@ void print_task_list(task_set_struct *task_set)
     fprintf(output_file, "\nTaskset:\n");
     for (i = 0; i < total_tasks; i++)
     {
-        fprintf(output_file, "Task %d | crit_level %d | phase %.2lf | rel_deadline %.2lf | virt_deadline %.2lf | ", 
+        fprintf(output_file, "Task: %d | core: %d | crit_level: %d | phase: %.2lf | rel_deadline: %.2lf | virt_deadline: %.2lf | ", 
                                 i, 
+                                task_list[i].core,
                                 task_list[i].criticality_lvl, 
                                 task_list[i].phase, 
                                 task_list[i].relative_deadline, 
                                 task_list[i].virtual_deadline);
-        fprintf(output_file, "WCET ");
+        fprintf(output_file, "WCET: ");
         for (j = 0; j < MAX_CRITICALITY_LEVELS; j++)
         {
             fprintf(output_file, "%.2lf ", task_list[i].WCET[j]);
         }
-        fprintf(output_file, " | Util ");
+        fprintf(output_file, " | Util: ");
         for (j = 0; j < MAX_CRITICALITY_LEVELS; j++)
         {
             fprintf(output_file, "%.3f ", task_list[i].util[j]);
@@ -94,13 +95,13 @@ void print_task_list(task_set_struct *task_set)
 /*
     Function to print the ready queue
 */
-void print_job_list(job *job_list_head)
+void print_job_list(int core_no, job *job_list_head)
 {
     job *job_temp = job_list_head;
     // fprintf(output_file, "\n");
     while (job_temp != NULL)
     {
-        fprintf(output_file, "Job:: Task no: %d  Release time: %.2lf  Exec time: %.2lf  Rem Exec time: %.2lf  WCET_counter: %.2lf  Deadline: %.2lf\n", 
+        fprintf(output[core_no], "Job:: Task no: %d  Release time: %.2lf  Exec time: %.2lf  Rem Exec time: %.2lf  WCET_counter: %.2lf  Deadline: %.2lf\n", 
                                 job_temp->task_number, 
                                 job_temp->release_time, 
                                 job_temp->execution_time, 
@@ -153,7 +154,9 @@ void print_processor(processor_struct *processor)
 */
 int compare_jobs(job *A, job *B)
 {
-    if (A == NULL || B == NULL)
+    if (A == NULL && B == NULL)
+        return 1;
+    else if (A == NULL || B == NULL)
         return 0;
 
     if (A->task_number == B->task_number && A->absolute_deadline == B->absolute_deadline)

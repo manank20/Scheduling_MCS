@@ -19,7 +19,7 @@ int main(){
     {
         fprintf(fd, "%.2lf ", phase);
 
-        period = (double)((double)(rand()%18) + 2)*10;
+        period = (double)((double)(rand()%18) + 2)*5;
         fprintf(fd, "%.2lf ", period);
 
         crit_level = rand()%MAX_CRITICALITY_LEVELS;
