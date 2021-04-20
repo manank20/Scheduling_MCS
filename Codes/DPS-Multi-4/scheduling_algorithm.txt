@@ -1,3 +1,86 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:bd7e43a3c68d1c7ea9186de0d86312f007661eb614794b806222d0844d10bba5
-size 4405
+Scheduling algorithm for mixed-criticality taskset (4 criticality levels)
+
+Input: Core, subtasks allocated to core.
+Output: A schedule of all the jobs of tasks subject to DPS, DVFS and criticality change.
+Assumptions: The taskset consists of the phase, deadline, criticality_level, WCET for each criticality level.
+Algorithm for scheduling the taskset:
+schedule_taskset():
+Step 1: find_superhyperperiod(cores)
+Step 2: Repeat until end of superhyperperiod
+        beginLoop
+        decision_point, decision_time = find_next_decision_point()
+
+        if decision point = ARRIVAL then
+            if new_job = DISCARDED then
+                max_slack = find_max_slack(core, new_job.deadline)
+                if max_slack > new_job.execution_time then
+                    core.ready_queue.insert(new_job)
+                    core.schedule_new_job()
+                else:
+                    discarded_queue.insert(new_job)
+            else:
+                core.ready_queue.insert(new_job)
+                core.schedule_new_job()                     //Insert the job in the ready queue and schedule a new job in the core. If the curent executing job has a later deadline, preempt the currently executing job. Update the WCET counter to indicate whether criticality change is needed.
+
+        if decision point = COMPLETION then  
+            core.remove_job_from_ready_queue()          //Remove job from ready queue.
+
+            if core.ready_queue is empty then
+                procrastination_interval = find_procrastination_interval()
+
+                if procrastination_interval > SDT then
+                    core.state = SHUTDOWN
+                    core.next_invocation_time = curr_time + procrastination_interval
+                else:
+                    accommodate_discarded_jobs_in_ready_queue(core, discarded_queue)
+                    core.schedule_new_job()
+            else:
+                core.schedule_new_job()                 //Schedule the next job from the ready queue. 
+
+        if decision point = TIMER_EXPIRY then
+            core.state = ACTIVE                         
+            core.ready_queue.insert(jobs)               //Insert the jobs already arrived in the ready queue.
+            core.schedule_new_job()                     //Schedule a new job from the ready queue. 
+        
+        if decision point = CRIT_CHANGE then
+            for each core c âˆˆ [0,N]
+                c.criticality_level = c.criticality_level + 1
+                c.insert_jobs_in_discarded_queue()
+                accommodate_discarded_jobs_in_ready_queue(c, discarded_queue)
+            core.schedule_new_job()                     //schedule a new HI-criticality job in the core. 
+
+------------------------------------------------------------------------------------------------------------------------
+Algorithm for finding the next decision point of the core.
+Input: The subtasks list allocated to the core. 
+Output: The decision point and time. The decision point can be ARRIVAL, COMPLETION, CRIT_CHANGE or TIMER_EXPIRY
+find_next_decision_point():
+    find arrival time of the next earliest arriving job.
+    if core.state = ACTIVE then
+        find completion time of currently executing job.
+        find WCET_counter of currently executing job. 
+    if core.state = SHUTDOWN then 
+        find next_invocation_time of the core.
+    
+    next_decision_time = min(arrival_time, completion_time, WCET_counter, next_invocation_time)
+    return next_decision_point, next_decision_time
+
+------------------------------------------------------------------------------------------------------------------------
+find_procrastination_interval():
+Same as the DPS algorithm. 
+
+------------------------------------------------------------------------------------------------------------------------
+insert_discarded_jobs_in_ready_queue(core, discarded_queue):
+    for each discarded_job in discarded_queue:
+        if discarded_job âˆˆ core:
+            max_slack = find_max_slack(core)
+
+            if max_slack > discarded_job.execution_time then
+                remove_job_from_discarded_queue()
+                core.insert.ready_queue(discarded_job)
+    
+    for each discarded_job in discarded_queue:
+        max_slack = find_max_slack(core)
+
+        if max_slack > discarded_job.execution_time then
+            remove_job_from_discarded_queue()
+            core.insert.ready_queue(discarded_job)

@@ -37,12 +37,14 @@ Global queue for all low criticality tasks. Implement for more than 2 criticalit
 
 
 Interesting things observed:
-1. If no task is allocated to a core, should it accommodate the discarded jobs, execute it and go in shutdown again?
-2. When there is a crit change, should a core which is in shutdown try to accommodate jobs from discarded queue?
+1. If no task is allocated to a core, should it accommodate the discarded jobs, execute it and go in shutdown again? No
+2. When there is a crit change, should a core which is in shutdown try to accommodate jobs from discarded queue? No
 3. When updating the job arrivals in the ready_queue, accommodate from the highest to lowest criticality_level.
-4. Due to shutdown, the discarded jobs that had arrived during the interval may miss their deadline.
+4. Due to shutdown, the discarded jobs that had arrived during the interval may miss their deadline. That is okay.
 5. When the core is going for shutdown, should the criticality of the system be reduced? (MAIN)
 6. When the decision time of arrival and completion is same, the priority is given to completion. At that time, it tries to insert jobs from discarded queue in ready queue and at the next decision point, will enter the arrival of next job. 
 7. When there is a crit_change, should the procrastination intervals be re-calculated? Because the execution times were taken of a lower criticality level during calculation. (MAIN)
 8. During calculation of procrastination interval, we take the WCET of jobs and calculate the interval. Possibility of WCET getting exceeded due to which a job may miss its deadline. (MAIN)
     Solution: Use the maximum WCET of each job instead of the WCET of current criticality level
+
+1. Criticality of system will be reduced to zero when all the cores are idle. If any core is not idle, and it has jobs of only the lower criticality level, then decrease the criticality_level to the highest of all the jobs.

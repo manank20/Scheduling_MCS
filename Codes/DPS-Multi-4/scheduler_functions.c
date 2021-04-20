@@ -509,9 +509,6 @@ void accommodate_discarded_jobs(job_queue_struct **ready_queue, job_queue_struct
     //First try to accommodate discarded jobs from the same core.
     insert_discarded_jobs_in_ready_queue(ready_queue, discarded_queue, task_set, core_no, curr_crit_level, curr_time, 1);
     
-    if((*discarded_queue)->num_jobs == 0)
-        return;
-
     //Then, try to accommodate more jobs from the discarded queue.
     insert_discarded_jobs_in_ready_queue(ready_queue, discarded_queue, task_set, core_no, curr_crit_level, curr_time, 0);
     return;
@@ -579,6 +576,7 @@ void update_job_arrivals(job_queue_struct **ready_queue, job_queue_struct **disc
 
     fprintf(output[core_no], "INSERTING JOBS IN READY/DISCARDED QUEUE\n");
 
+    //Update the job arrivals from highest criticality level to the lowest.
     for(crit_level = MAX_CRITICALITY_LEVELS - 1; crit_level >= 0; crit_level--){
         for (curr_task = 0; curr_task < total_tasks; curr_task++)
         {
@@ -689,7 +687,7 @@ job *find_job_list(double start_time, double end_time, task_set_struct *task_set
     double release_time;
     task curr_task;
     int total_jobs = 0;
-
+    
     for (i = 0; i < task_set->total_tasks; i++)
     {
         if (task_set->task_list[i].criticality_lvl >= curr_crit_level && task_set->task_list[i].core == core_no)
@@ -699,8 +697,8 @@ job *find_job_list(double start_time, double end_time, task_set_struct *task_set
             while (release_time >= start_time && release_time < end_time)
             {
                 new_job = malloc(sizeof(job));
-                new_job->execution_time = curr_task.WCET[MAX_CRITICALITY_LEVELS-1];
-                new_job->rem_exec_time = curr_task.WCET[MAX_CRITICALITY_LEVELS-1];
+                new_job->execution_time = curr_task.WCET[curr_task.criticality_lvl];
+                new_job->rem_exec_time = curr_task.WCET[curr_task.criticality_lvl];
                 new_job->release_time = release_time;
                 new_job->task_number = i;
                 new_job->absolute_deadline = release_time + task_set->task_list[i].virtual_deadline;
@@ -951,6 +949,7 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
             double procrastionation_interval;
             fprintf(output[decision_core], "Job %d, %d completed execution | ", processor->cores[decision_core].curr_exec_job->task_number, processor->cores[decision_core].curr_exec_job->job_number);
 
+            //Check to see if the job has missed its deadline or not.
             double deadline = processor->cores[decision_core].curr_exec_job->absolute_deadline;
             if(deadline < processor->cores[decision_core].total_time)
             {
@@ -967,28 +966,21 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
             if (processor->cores[decision_core].ready_queue->num_jobs == 0)
             {
                 fprintf(output[decision_core], "No job to execute | ");
-
-                if(processor->cores[decision_core].num_tasks_allocated == 0) {
-                    fprintf(output[decision_core], "No tasks allocated to core. Putting to shutdown\n");
+                
+                procrastionation_interval = find_procrastination_interval(processor->cores[decision_core].total_time, task_set, processor->crit_level, decision_core);
+                if (procrastionation_interval > SHUTDOWN_THRESHOLD)
+                {
+                    fprintf(output[decision_core], "Procrastination interval %.2lf greater than SDT | Putting core to sleep\n", procrastionation_interval);
                     processor->cores[decision_core].state = SHUTDOWN;
-                    processor->cores[decision_core].next_invocation_time = INT_MAX;
+                    processor->cores[decision_core].next_invocation_time = procrastionation_interval + processor->cores[decision_core].total_time;
                 }
-                else {
-                    procrastionation_interval = find_procrastination_interval(processor->cores[decision_core].total_time, task_set, processor->crit_level, decision_core);
-                    if (procrastionation_interval > SHUTDOWN_THRESHOLD)
-                    {
-                        fprintf(output[decision_core], "Procrastination interval %.2lf greater than SDT | Putting core to sleep\n", procrastionation_interval);
-                        processor->cores[decision_core].state = SHUTDOWN;
-                        processor->cores[decision_core].next_invocation_time = procrastionation_interval + processor->cores[decision_core].total_time;
-                    }
-                    else
-                    {
-                        fprintf(output[decision_core], "Procrastination interval %.2lf less than shutdown threshold | Not putting core to sleep\n", procrastionation_interval);
-                        processor->cores[decision_core].state = ACTIVE;
-                        
-                        //Accommodate discarded jobs in ready queue.
-                        accommodate_discarded_jobs(&(processor->cores[decision_core].ready_queue), &discarded_queue, task_set, decision_core, processor->crit_level, processor->cores[decision_core].total_time);
-                    }
+                else
+                {
+                    fprintf(output[decision_core], "Procrastination interval %.2lf less than shutdown threshold | Not putting core to sleep\n", procrastionation_interval);
+                    processor->cores[decision_core].state = ACTIVE;
+                    
+                    //Accommodate discarded jobs in ready queue.
+                    accommodate_discarded_jobs(&(processor->cores[decision_core].ready_queue), &discarded_queue, task_set, decision_core, processor->crit_level, processor->cores[decision_core].total_time);
                 }
             }
             
@@ -1021,7 +1013,7 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
         //If decision point is due to criticality change, then the currently executing job has exceeded its WCET.
         else if (decision_point == CRIT_CHANGE)
         {
-            double core_prev_decision_time, procrastination_interval;
+            double core_prev_decision_time;
             //Increase the criticality level of the processor.
             processor->crit_level = min(processor->crit_level + 1, MAX_CRITICALITY_LEVELS - 1);
 
@@ -1036,20 +1028,20 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                 fprintf(output[num_core], "Core: %d | Criticality changed | Crit level: %d | State: %s\n", num_core, processor->crit_level, processor->cores[num_core].state == ACTIVE ? "ACTIVE": "SHUTDOWN");
                 
                 if(processor->cores[num_core].state == ACTIVE) {
-
                     //Need the core's prevision decision time for updating the execution time of currently executing job.
                     if(num_core != decision_core)
                         core_prev_decision_time = processor->cores[num_core].total_time;
                     else
                         core_prev_decision_time = prev_decision_time;
-                    processor->cores[num_core].total_time = decision_time;
-
+                    processor->cores[num_core].total_time = decision_time;  
+                
                     //Update the time for which the current job has executed.
                     if(processor->cores[num_core].curr_exec_job != NULL) {
                         processor->cores[num_core].curr_exec_job->rem_exec_time -= (processor->cores[num_core].total_time - core_prev_decision_time);
                     }
                     processor->cores[num_core].curr_exec_job = NULL;
 
+                    //First remove the low criticality jobs from ready queue and insert it into discarded queue.
                     if(processor->cores[num_core].ready_queue->num_jobs != 0){
                         // fprintf(output[decision_core], "Ready queue of core %d before removal\n", num_core);
                         // print_job_list(num_core, processor->cores[num_core].ready_queue->job_list_head);
@@ -1057,35 +1049,12 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                         remove_jobs_from_ready_queue(&processor->cores[num_core].ready_queue, &discarded_queue, task_list, processor->crit_level, processor->cores[num_core].threshold_crit_lvl, num_core);
                     }
 
+                    //Then try to accommodate the discarded jobs back in the ready queue.
                     accommodate_discarded_jobs(&(processor->cores[num_core].ready_queue), &discarded_queue, task_set, num_core, processor->crit_level, processor->cores[num_core].total_time);
 
                     if(processor->cores[num_core].ready_queue->num_jobs != 0) {
                         // fprintf(output[decision_core], "Ready queue of core %d after removal\n", num_core);
                         // print_job_list(num_core, processor->cores[num_core].ready_queue->job_list_head);
-                        schedule_new_job(&processor->cores[num_core], processor->cores[num_core].ready_queue, task_set);
-                    }
-                }
-                else 
-                {
-                    processor->cores[num_core].state = ACTIVE;
-                    procrastination_interval = find_procrastination_interval(processor->cores[num_core].total_time, task_set, processor->crit_level, num_core);
-                    if (procrastination_interval > SHUTDOWN_THRESHOLD)
-                    {
-                        fprintf(output[num_core], "Procrastination interval %.2lf greater than SDT | Putting core to sleep\n", procrastination_interval);
-                        processor->cores[num_core].state = SHUTDOWN;
-                        processor->cores[num_core].next_invocation_time = procrastination_interval + processor->cores[num_core].total_time;
-                    }
-                    else
-                    {
-                        fprintf(output[num_core], "Procrastination interval %.2lf less than shutdown threshold | Not putting core to sleep\n", procrastination_interval);
-                        
-                        //Accommodate discarded jobs in ready queue.
-                        accommodate_discarded_jobs(&(processor->cores[num_core].ready_queue), &discarded_queue, task_set, num_core, processor->crit_level, processor->cores[num_core].total_time);
-                    }
-
-                    if(processor->cores[num_core].ready_queue->num_jobs != 0) {
-                        // fprintf(output[decision_core], "Ready queue of core %d after removal\n", num_core);
-                        // print_job_list(processor->cores[num_core].ready_queue->job_list_head);
                         schedule_new_job(&processor->cores[num_core], processor->cores[num_core].ready_queue, task_set);
                     }
                 }

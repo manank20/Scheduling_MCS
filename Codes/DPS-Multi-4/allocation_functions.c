@@ -87,7 +87,7 @@ L1: ;
                 processor->cores[num_core].x_factor = x_factor.x;
                 processor->cores[num_core].threshold_crit_lvl = x_factor.k;
                 processor->cores[num_core].num_tasks_allocated++;
-                fprintf(output_file, "Allocating %d task to %d core.\n", task_number, num_core);
+                fprintf(output_file, "Allocating task %d to core %d.\n", task_number, num_core);
             }
         }
         else
