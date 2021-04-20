@@ -39,8 +39,8 @@ int allocate(task_set_struct *task_set, int task_number, processor_struct *proce
     int k;
     int num_core = 0;
 
-// fprintf(output_file, "Task number: %d, Crit level: %d\t", task_number, crit_level);
 L1: ;
+    fprintf(output_file, "Task: %d, Core: %d, Crit level: %d | ", task_number, num_core, crit_level);
     int flag = 1;
     for (k = 0; k < crit_level; k++)
     {
@@ -62,7 +62,7 @@ L1: ;
             x_factor_struct x_factor = check_schedulability(task_set, num_core);
             if (x_factor.x == 0.00)
             {
-                fprintf(output_file, "Schedulability conditions not satisified for core %d\n", num_core);
+                fprintf(output_file, "Schedulability conditions not satisified.\n");
                 task_set->task_list[task_number].core = -1;
                 total_util[num_core][crit_level] -= task_set->task_list[task_number].util[crit_level];
             }
@@ -92,7 +92,7 @@ L1: ;
         }
         else
         {
-            fprintf(output_file, "For task %d, Total high util reached for core %d\n", task_number, num_core);
+            fprintf(output_file, "Max util reached. Util: %.2lf\n", total_util[num_core][crit_level]);
             total_util[num_core][crit_level] -= task_set->task_list[task_number].util[crit_level];
         }
     }
@@ -122,14 +122,20 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
 {
     int i;
     double MAX_UTIL[MAX_CRITICALITY_LEVELS], total_util[processor->total_cores][MAX_CRITICALITY_LEVELS];
-
-    //Maximum utilisation per criticality level allowed for each core.
-    MAX_UTIL[0] = 1.00, MAX_UTIL[1] = 0.6, MAX_UTIL[2] = 0.5, MAX_UTIL[3] = 0.5;
-
     int crit_level, num_core;
     double non_shutdown_utilisation = 0.00;
-
     int total_tasks = task_set->total_tasks;
+    
+    //Maximum utilisation per criticality level allowed for each core.
+    MAX_UTIL[0] = 1.00, MAX_UTIL[1] = 0.6, MAX_UTIL[2] = 0.5, MAX_UTIL[3] = 0.5;
+        
+    for(i=0; i<processor->total_cores; i++)
+    {
+        for(crit_level = 0; crit_level < MAX_CRITICALITY_LEVELS; crit_level++)
+        {
+            total_util[i][crit_level] = 0.00;
+        }
+    }
 
     //Find the non-shutdown tasks and the shutdown tasks based on the value of 2*P - 2*E.
     for (i = 0; i < total_tasks; i++)
