@@ -97,7 +97,11 @@ select_frequency():
 if ready_queue has a discarded_job:
     core.frequency = MAX_FREQ
 else:
-    U_dyn = U_rq + U_future
-    U_rq = sum of utilisation of all jobs in ready queue where utilisation = WCET[] / abs_D - curr_time
-    U_future = sum of utilisation of all jobs arriving in [t, abs_D)
-    Select frequency such that U_dyn <= fi/fmax for all criticality_level greater than curr_level
+    for each crit_level from curr_level to MAX:
+        Calculate U_dyn = U_rq + U_low + U_high
+
+        U_rq = Sum of util of jobs in ready_queue where util = rem_WCET[crit_level] / abs_D - curr_time
+        U_low = Sum of util of lower priority jobs arriving in future where util = util[crit_level] * (abs_D - arrival_time) / period
+        U_high = Sum of util of higher priority jobs arriving in future where util = util[crit_level]
+
+        Select lowest frequency fi such that U_dyn <= fi/fmax

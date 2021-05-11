@@ -1,37 +1,37 @@
 STATISTICS FOR ALL CORES
 Core 0
-            Total active time: 16717.22
-            Total idle time: 82.78
+            Total active time: 1149164.76
+            Total idle time: 95715.24
             Total shutdown time: 0.00
-            Total arrival points: 784
-            Total completion points: 1309
+            Total arrival points: 124488
+            Total completion points: 227235
             Total wakeup points: 0
-            Total crit change points: 0
-            Total context switches: 1340
+            Total crit change points: 1
+            Total context switches: 262689
 
 Core 1
-            Total active time: 8922.11
-            Total idle time: 1493.22
-            Total shutdown time: 6384.67
-            Total arrival points: 201
-            Total completion points: 470
-            Total wakeup points: 65
-            Total crit change points: 0
-            Total context switches: 470
+            Total active time: 1203691.43
+            Total idle time: 41188.57
+            Total shutdown time: 0.00
+            Total arrival points: 76608
+            Total completion points: 103603
+            Total wakeup points: 0
+            Total crit change points: 1
+            Total context switches: 122316
 
 Core 2
-            Total active time: 0.00
-            Total idle time: 16800.00
-            Total shutdown time: 0.00
-            Total arrival points: 0
-            Total completion points: 0
-            Total wakeup points: 0
+            Total active time: 10641.00
+            Total idle time: 1164411.00
+            Total shutdown time: 69828.00
+            Total arrival points: 506
+            Total completion points: 1012
+            Total wakeup points: 506
             Total crit change points: 0
-            Total context switches: 0
+            Total context switches: 1012
 
 Core 3
             Total active time: 0.00
-            Total idle time: 16800.00
+            Total idle time: 1244880.00
             Total shutdown time: 0.00
             Total arrival points: 0
             Total completion points: 0

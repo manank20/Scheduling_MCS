@@ -57,29 +57,29 @@ void print_task_list(task_set_struct *task_set)
     total_tasks = task_set->total_tasks;
     task_list = task_set->task_list;
 
-    printf("\nTaskset:\n");
+    fprintf(output_file, "\nTaskset:\n");
     for (i = 0; i < total_tasks; i++)
     {
-        printf("Task: %d | core: %d | crit_level: %d | phase: %.2lf | rel_deadline: %.2lf | virt_deadline: %.2lf | ", 
+        fprintf(output_file, "Task: %d | core: %d | crit_level: %d | phase: %.2lf | rel_deadline: %.2lf | virt_deadline: %.2lf | ", 
                                 i, 
                                 task_list[i].core,
                                 task_list[i].criticality_lvl, 
                                 task_list[i].phase, 
                                 task_list[i].relative_deadline, 
                                 task_list[i].virtual_deadline);
-        printf("WCET: ");
+        fprintf(output_file, "WCET: ");
         for (j = 0; j < MAX_CRITICALITY_LEVELS; j++)
         {
-            printf("%.2lf ", task_list[i].WCET[j]);
+            fprintf(output_file, "%.2lf ", task_list[i].WCET[j]);
         }
-        printf(" | Util: ");
+        fprintf(output_file, " | Util: ");
         for (j = 0; j < MAX_CRITICALITY_LEVELS; j++)
         {
-            printf("%.3f ", task_list[i].util[j]);
+            fprintf(output_file, "%.3f ", task_list[i].util[j]);
         }
-        printf("\n");
+        fprintf(output_file, "\n");
     }
-    printf("\n");
+    fprintf(output_file, "\n");
 
     return;
 }
@@ -90,7 +90,7 @@ void print_task_list(task_set_struct *task_set)
 void print_job_list(int core_no, job *job_list_head)
 {
     job *job_temp = job_list_head;
-    // printf("\n");
+    // fprintf(output_file, "\n");
     while (job_temp != NULL)
     {
         fprintf(output[core_no], "Job:: Task no: %d  Release time: %.2lf  Exec time: %.2lf  Rem Exec time: %.2lf  WCET_counter: %.2lf  Deadline: %.2lf\n", 
@@ -112,14 +112,14 @@ void print_job_list(int core_no, job *job_list_head)
 void print_total_utilisation(double total_utilisation[][MAX_CRITICALITY_LEVELS])
 {
     int i, j;
-    printf("\nTotal utilisation:\n");
+    fprintf(output_file, "\nTotal utilisation:\n");
     for (i = 0; i < MAX_CRITICALITY_LEVELS; i++)
     {
         for (j = 0; j < MAX_CRITICALITY_LEVELS; j++)
         {
-            printf("%lf  ", total_utilisation[i][j]);
+            fprintf(output_file, "%lf  ", total_utilisation[i][j]);
         }
-        printf("\n");
+        fprintf(output_file, "\n");
     }
     return;
 }
@@ -127,18 +127,18 @@ void print_total_utilisation(double total_utilisation[][MAX_CRITICALITY_LEVELS])
 void print_processor(processor_struct *processor)
 {
     int i;
-    printf("\nProcessor statistics:\n");
-    printf("Num cores: %d\n", processor->total_cores);
+    fprintf(output_file, "\nProcessor statistics:\n");
+    fprintf(output_file, "Num cores: %d\n", processor->total_cores);
     for (i = 0; i < processor->total_cores; i++)
     {
-        printf("Core: %d, total time: %.2lf, total idle time: %.2lf, total busy time: %.2lf, state: %s\n", 
+        fprintf(output_file, "Core: %d, total time: %.2lf, total idle time: %.2lf, total busy time: %.2lf, state: %s\n", 
                                 i, 
                                 processor->cores[i].total_time, 
                                 processor->cores[i].total_idle_time, 
                                 processor->cores[i].total_time - processor->cores[i].total_idle_time, 
                                 (processor->cores[i].state == ACTIVE) ? "ACTIVE" : "SHUTDOWN");
     }
-    printf("\n");
+    fprintf(output_file, "\n");
 }
 
 /*
