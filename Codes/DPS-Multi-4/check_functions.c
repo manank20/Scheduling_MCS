@@ -1,5 +1,4 @@
-#include "check_functions.h"
-#include "auxiliary_functions.h"
+#include "functions.h"
 
 void find_total_utilisation(int total_tasks, task *tasks_list, double total_utilisation[][MAX_CRITICALITY_LEVELS], int core_no)
 {
@@ -56,7 +55,7 @@ x_factor_struct check_schedulability(task_set_struct *task_set, int core_no)
 
     find_total_utilisation(total_tasks, tasks_list, total_utilisation, core_no);
 
-    // print_total_utilisation(total_utilisation, output_file);
+    print_total_utilisation(total_utilisation);
 
     //Condition to be checked for feasible tasksets. The condition is given in 2015 Baruah's paper - page 7.
     for(i=0; i<MAX_CRITICALITY_LEVELS; i++){
@@ -106,31 +105,25 @@ x_factor_struct check_schedulability(task_set_struct *task_set, int core_no)
             util_LO_LO += total_utilisation[j][j];
         }
 
+        if(util_LO_LO > 1)
+            continue;
+
         for(j=criticality_lvl + 1; j<MAX_CRITICALITY_LEVELS; j++){
             util_HI_HI += total_utilisation[j][j];
             util_HI_LO += total_utilisation[j][criticality_lvl];
         }
-
-        // fprintf(output_file, "\nutilisation:\n1_to_l: %lf\nl_to_max: %lf\nk_to_max: %lf\n", util_LO_LO, util_HI_HI, util_HI_LO);
   
         x = (double) util_HI_LO / (double) (1 - util_LO_LO);
 
-        if(x < 0)
-            continue;
-
         check1 = x*util_LO_LO + util_HI_HI;
 
-        // fprintf(output_file, "Crit_lvl = %d, util_HI_LO = %lf, util_LO_LO = %lf, util_HI_HI = %lf, x = %lf, check1 = %lf\n", criticality_lvl, util_HI_LO, util_LO_LO, util_HI_HI, x, check1);    
-
-        if(check1 <= (double)1) {
-            // fprintf(output_file, "Checks satisfied\n");
+        if(check1 <= 1.00) {
             x_factor.x = x;
             x_factor.k = criticality_lvl;
             return x_factor;
         
         }
     }
-    // fprintf(output_file, "\n");
 
     //If no such k exists, then the taskset is not schedulable.
     x_factor.x = 0.00;

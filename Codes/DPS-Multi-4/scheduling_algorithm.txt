@@ -15,14 +15,18 @@ Step 2: Repeat until end of superhyperperiod
                 max_slack = find_max_slack(core, new_job.deadline)
                 if max_slack > new_job.execution_time then
                     core.ready_queue.insert(new_job)
+                    select_frequency(core)
                     core.schedule_new_job()
                 else:
                     discarded_queue.insert(new_job)
             else:
                 core.ready_queue.insert(new_job)
+                new_job.util = Ci / Pi
+                select_frequency(core)
                 core.schedule_new_job()                     //Insert the job in the ready queue and schedule a new job in the core. If the curent executing job has a later deadline, preempt the currently executing job. Update the WCET counter to indicate whether criticality change is needed.
 
         if decision point = COMPLETION then  
+            completed_job.util = cci / Pi
             core.remove_job_from_ready_queue()          //Remove job from ready queue.
 
             if core.ready_queue is empty then
@@ -33,13 +37,15 @@ Step 2: Repeat until end of superhyperperiod
                     core.next_invocation_time = curr_time + procrastination_interval
                 else:
                     accommodate_discarded_jobs_in_ready_queue(core, discarded_queue)
-                    core.schedule_new_job()
-            else:
+
+            if core.ready_queue is not empty then:
+                select_frequency(core)
                 core.schedule_new_job()                 //Schedule the next job from the ready queue. 
 
         if decision point = TIMER_EXPIRY then
             core.state = ACTIVE                         
             core.ready_queue.insert(jobs)               //Insert the jobs already arrived in the ready queue.
+            core.frequency = 1.00
             core.schedule_new_job()                     //Schedule a new job from the ready queue. 
         
         if decision point = CRIT_CHANGE then
@@ -47,7 +53,8 @@ Step 2: Repeat until end of superhyperperiod
                 c.criticality_level = c.criticality_level + 1
                 c.insert_jobs_in_discarded_queue()
                 accommodate_discarded_jobs_in_ready_queue(c, discarded_queue)
-            core.schedule_new_job()                     //schedule a new HI-criticality job in the core. 
+                select_frequency(c)
+                c.schedule_new_job()
 
 ------------------------------------------------------------------------------------------------------------------------
 Algorithm for finding the next decision point of the core.
@@ -84,3 +91,13 @@ insert_discarded_jobs_in_ready_queue(core, discarded_queue):
         if max_slack > discarded_job.execution_time then
             remove_job_from_discarded_queue()
             core.insert.ready_queue(discarded_job)
+
+------------------------------------------------------------------------------------------------------------------------
+select_frequency():
+if ready_queue has a discarded_job:
+    core.frequency = MAX_FREQ
+else:
+    U_dyn = U_rq + U_future
+    U_rq = sum of utilisation of all jobs in ready queue where utilisation = WCET[] / abs_D - curr_time
+    U_future = sum of utilisation of all jobs arriving in [t, abs_D)
+    Select frequency such that U_dyn <= fi/fmax for all criticality_level greater than curr_level

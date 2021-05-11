@@ -1,6 +1,4 @@
-#include "allocation_functions.h"
-#include "check_functions.h"
-#include "auxiliary_functions.h"
+#include "functions.h"
 
 processor_struct *initialize_processor()
 {
@@ -21,6 +19,7 @@ processor_struct *initialize_processor()
         processor->cores[i].state = ACTIVE;
         processor->cores[i].next_invocation_time = INT_MAX;
         processor->cores[i].is_shutdown = -1;
+        processor->cores[i].frequency = 1.00;
 
         processor->cores[i].rem_util = (double *)malloc(sizeof(double) * MAX_CRITICALITY_LEVELS);
         for (int j = 0; j < MAX_CRITICALITY_LEVELS; j++)
@@ -33,7 +32,7 @@ processor_struct *initialize_processor()
     return processor;
 }
 
-int allocate(task_set_struct *task_set, int task_number, processor_struct *processor, double total_util[][MAX_CRITICALITY_LEVELS], double MAX_UTIL[], int exceptional_task, int shutdown, int shutdown_cores)
+int allocate(task_set_struct *task_set, int task_number, processor_struct *processor, double total_util[][MAX_CRITICALITY_LEVELS], double MAX_UTIL[], int exceptional_task, int shutdown, int non_shutdown_cores)
 {
     int crit_level = task_set->task_list[task_number].criticality_lvl;
     int k;
@@ -46,7 +45,7 @@ L1: ;
     {
         if (processor->cores[num_core].rem_util[k] < task_set->task_list[task_number].util[k])
         {
-            fprintf(output_file, "Not enough rem util %.2lf at crit level %d for core %d\n", processor->cores[num_core].rem_util[crit_level], crit_level, num_core);
+            fprintf(output_file, "Rem util %.2lf less than task util %.2lf at crit level %d for core %d\n", processor->cores[num_core].rem_util[crit_level], task_set->task_list[task_number].util[k], crit_level, num_core);
             flag = 0;
             break;
         }
@@ -55,8 +54,8 @@ L1: ;
     if (flag != 0)
     {
         flag = 0;
-        total_util[num_core][crit_level] += task_set->task_list[task_number].util[crit_level];
-        if (exceptional_task == 1 || total_util[num_core][crit_level] <= MAX_UTIL[crit_level])
+        
+        if (exceptional_task == EXCEPTIONAL || (total_util[num_core][crit_level] + task_set->task_list[task_number].util[crit_level]) <= MAX_UTIL[crit_level])
         {
             task_set->task_list[task_number].core = num_core;
             x_factor_struct x_factor = check_schedulability(task_set, num_core);
@@ -64,21 +63,21 @@ L1: ;
             {
                 fprintf(output_file, "Schedulability conditions not satisified.\n");
                 task_set->task_list[task_number].core = -1;
-                total_util[num_core][crit_level] -= task_set->task_list[task_number].util[crit_level];
             }
             else
             {
                 flag = 1;
+                total_util[num_core][crit_level] += task_set->task_list[task_number].util[crit_level];
 
                 if (processor->cores[num_core].is_shutdown == -1)
                 {
-                    if (task_set->task_list[task_number].shutdown == SHUTDOWN)
+                    if (task_set->task_list[task_number].shutdown == SHUTDOWN_TASK)
                     {
-                        processor->cores[num_core].is_shutdown = SHUTDOWN;
+                        processor->cores[num_core].is_shutdown = SHUTDOWN_CORE;
                     }
                     else
                     {
-                        processor->cores[num_core].is_shutdown = NON_SHUTDOWN;
+                        processor->cores[num_core].is_shutdown = NON_SHUTDOWN_CORE;
                     }
                 }
 
@@ -92,8 +91,7 @@ L1: ;
         }
         else
         {
-            fprintf(output_file, "Max util reached. Util: %.2lf\n", total_util[num_core][crit_level]);
-            total_util[num_core][crit_level] -= task_set->task_list[task_number].util[crit_level];
+            fprintf(output_file, "Max util reached. Util: %.2lf\n", total_util[num_core][crit_level] + task_set->task_list[task_number].util[crit_level]);
         }
     }
 
@@ -101,11 +99,11 @@ L1: ;
     {
         // fprintf(output_file, "Entered flag = 0 for task %d\n", task_number);
         num_core++;
-        if (shutdown == 1 && num_core == shutdown_cores)
+        if (shutdown == NON_SHUTDOWN_TASK && num_core == non_shutdown_cores)
         {
-            shutdown_cores++;
+            non_shutdown_cores++;
         }
-        else if (num_core == processor->total_cores)
+        if (num_core == processor->total_cores)
         {
             fprintf(output_file, "Insufficient number of cores\n");
             return 0;
@@ -141,13 +139,13 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
     for (i = 0; i < total_tasks; i++)
     {
         double interval = 2 * task_set->task_list[i].period - 2 * task_set->task_list[i].WCET[task_set->task_list[i].criticality_lvl];
-        if (interval > NON_SHUTDOWN_THRESHOLD)
+        if (interval > SHUTDOWN_THRESHOLD)
         {
-            task_set->task_list[i].shutdown = SHUTDOWN;
+            task_set->task_list[i].shutdown = SHUTDOWN_TASK;
         }
         else
         {
-            task_set->task_list[i].shutdown = NON_SHUTDOWN;
+            task_set->task_list[i].shutdown = NON_SHUTDOWN_TASK;
         }
     }
 
@@ -155,7 +153,7 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
     fprintf(output_file, "Non shutdown tasks are:\n");
     for(i=0; i<total_tasks; i++)
     {
-        if(task_set->task_list[i].shutdown == NON_SHUTDOWN){
+        if(task_set->task_list[i].shutdown == NON_SHUTDOWN_TASK){
             fprintf(output_file, "%d ", i);
             non_shutdown_utilisation += task_set->task_list[i].util[task_set->task_list[i].criticality_lvl];
         }
@@ -191,9 +189,9 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
 
         for(i=0; i<total_tasks; i++)
         {
-            if (task_set->task_list[i].shutdown == NON_SHUTDOWN && task_set->task_list[i].core == -1 && task_set->task_list[i].criticality_lvl == crit_level)
+            if (task_set->task_list[i].shutdown == NON_SHUTDOWN_TASK && task_set->task_list[i].core == -1 && task_set->task_list[i].criticality_lvl == crit_level)
             {
-                int result = allocate(task_set, i, processor, total_util, MAX_UTIL, 0, NON_SHUTDOWN, non_shutdown_cores);
+                int result = allocate(task_set, i, processor, total_util, MAX_UTIL, 0, NON_SHUTDOWN_TASK, non_shutdown_cores);
 
                 if (result == 0)
                 {
@@ -212,9 +210,9 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
         i = 0;
         for(i=0; i<total_tasks; i++)
         {
-            if (task_set->task_list[i].shutdown == SHUTDOWN && task_set->task_list[i].core == -1 && task_set->task_list[i].criticality_lvl == crit_level)
+            if (task_set->task_list[i].shutdown == SHUTDOWN_TASK && task_set->task_list[i].core == -1 && task_set->task_list[i].criticality_lvl == crit_level)
             {
-                int result = allocate(task_set, i, processor, total_util, MAX_UTIL, 0, SHUTDOWN, 0);
+                int result = allocate(task_set, i, processor, total_util, MAX_UTIL, 0, SHUTDOWN_TASK, 0);
 
                 if (result == 0)
                 {
@@ -232,10 +230,9 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
         }
         else {
             processor->cores[i].state = ACTIVE;
+            fprintf(output_file, "Core: %d, x factor: %.5lf, K value: %d\n", i, processor->cores[i].x_factor, processor->cores[i].threshold_crit_lvl);
+            set_virtual_deadlines(&task_set, i, processor->cores[i].x_factor, processor->cores[i].threshold_crit_lvl);
         }
-
-        fprintf(output_file, "Core: %d, x factor: %.5lf, K value: %d\n", i, processor->cores[i].x_factor, processor->cores[i].threshold_crit_lvl);
-        set_virtual_deadlines(&task_set, i, processor->cores[i].x_factor, processor->cores[i].threshold_crit_lvl);
     }
     fprintf(output_file, "\n");
     return 1;

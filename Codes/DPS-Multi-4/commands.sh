@@ -1,5 +1,4 @@
 #!/bin/sh
-make all
-./test input.txt output.txt
+make
 make clean
 echo "\nOpen output.txt to see the output\n"

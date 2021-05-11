@@ -1,5 +1,5 @@
-#ifndef DATA_STRUCTURES_H_
-#define DATA_STRUCTURES_H_
+#ifndef __DATA_STRUCTURES_H_
+#define __DATA_STRUCTURES_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,27 +8,33 @@
 #include <time.h>
 #include <math.h>
 
+//Max criticality levels assumed
 #define MAX_CRITICALITY_LEVELS 4
+
+//Decision points
 #define ARRIVAL 0
 #define COMPLETION 1
 #define TIMER_EXPIRE 2
 #define CRIT_CHANGE 3
 
+//State of core
 #define ACTIVE 100
-#define NON_SHUTDOWN 101
 #define SHUTDOWN 102
+#define IDLE 103
+
+#define SHUTDOWN_TASK 201
+#define NON_SHUTDOWN_TASK 202
+#define SHUTDOWN_CORE 203
+#define NON_SHUTDOWN_CORE 204
+#define EXCEPTIONAL 1
 
 #define INT_MIN -2147483648
 #define INT_MAX 2147483647
 
-#define SHUTDOWN_THRESHOLD 80
+#define SHUTDOWN_THRESHOLD 90
 #define NUM_CORES 4
-#define NON_SHUTDOWN_THRESHOLD 100
 
-#define EXCEPTIONAL 1
-
-FILE* output_file;
-FILE* output[NUM_CORES];
+#define FREQUENCY_LEVELS 5
 
 /*
     ADT for a task. The parameters in the task are:
@@ -73,7 +79,7 @@ typedef struct
         scheduled_time: The time at which job starts executing in core.
         execution_time: The actual execution time of the job.
         actual_execution_time: The time for which job has executed.
-        completed_job_time: The time at which the job will finish execution.
+        completion_time: The time at which the job will finish execution.
         WCET_counter: A counter to check whether the job exceeds the worst case execution time.
         absolute_deadline: The deadline of the job.
         next: A link to the next job in the array.
@@ -81,15 +87,15 @@ typedef struct
 */
 struct job
 {
+    double release_time;
+    double execution_time;
+    double absolute_deadline;
+    double scheduled_time;
+    double rem_exec_time;
+    double completion_time;
+    double WCET_counter;
     int job_number;
     int task_number;
-    double release_time;
-    double scheduled_time;
-    double execution_time;
-    double rem_exec_time;
-    double completed_job_time;
-    double WCET_counter;
-    double absolute_deadline;
     struct job *next;
 };
 
@@ -132,7 +138,7 @@ typedef struct
     double WCET_counter;
     double next_invocation_time;    
     
-    int frequency;
+    double frequency;
     int state; //ACTIVE or SHUTDOWN
     double *rem_util;
 
@@ -174,5 +180,22 @@ typedef struct {
     double x;
     int k;
 }x_factor_struct;
+
+typedef struct {
+    double *total_shutdown_time;
+    double *total_idle_energy;
+    double *total_active_energy;
+    int *total_context_switches;
+    int *total_arrival_points;
+    int *total_completion_points;
+    int *total_criticality_change_points;
+    int *total_wakeup_points;
+}stats_struct;
+
+FILE* output_file;
+FILE* output[NUM_CORES];
+stats_struct *stats;
+
+double frequency[FREQUENCY_LEVELS];
 
 #endif
