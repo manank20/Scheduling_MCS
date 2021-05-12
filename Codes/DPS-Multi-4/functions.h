@@ -64,13 +64,12 @@ extern double find_procrastination_interval(double curr_time, task_set_struct *t
 /*-------------------------------------------------------------------------------*/
 
 /*---------------------------DVFS FUNCTIONS---------------------------*/
-extern void select_frequency(core_struct* core, task_set_struct* task_set, int curr_crit_level, int core_no);
+extern void select_frequency(core_struct *core, task_set_struct *task_set, int curr_crit_level, int core_no);
 /*--------------------------------------------------------------------*/
 
 /*---------------------------CHECK FUNCTIONS---------------------------*/
 extern x_factor_struct check_schedulability(task_set_struct *task_set, int core_no);
 /*---------------------------------------------------------------------*/
-
 
 /*---------------------------QUEUE FUNCTIONS---------------------------*/
 extern void insert_job_in_discarded_queue(job_queue_struct **discarded_queue, job *new_job, task *task_list);
@@ -93,9 +92,8 @@ extern int compare_jobs(job *A, job *B);
 extern double find_actual_execution_time(double exec_time, int task_crit_lvl, int core_crit_lvl);
 extern void set_virtual_deadlines(task_set_struct **task_set, int core_no, double x, int k);
 extern void reset_virtual_deadlines(task_set_struct **task_set, int core_no, int k);
-extern int check_all_cores(processor_struct* processor);
-extern int find_max_level(processor_struct* processor, task_set_struct* task_set);
+extern int check_all_cores(processor_struct *processor);
+extern int find_max_level(processor_struct *processor, task_set_struct *task_set);
 /*-------------------------------------------------------------------------*/
-
 
 #endif

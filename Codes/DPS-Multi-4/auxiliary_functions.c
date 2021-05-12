@@ -4,7 +4,7 @@ int randnum()
 {
     int num = 16;
     int val = 0;
-    for(int i=0; i<num; i++)
+    for (int i = 0; i < num; i++)
         val |= (rand() & 1);
     return val;
 }
@@ -60,13 +60,13 @@ void print_task_list(task_set_struct *task_set)
     fprintf(output_file, "\nTaskset:\n");
     for (i = 0; i < total_tasks; i++)
     {
-        fprintf(output_file, "Task: %d | core: %d | crit_level: %d | phase: %.2lf | rel_deadline: %.2lf | virt_deadline: %.2lf | ", 
-                                i, 
-                                task_list[i].core,
-                                task_list[i].criticality_lvl, 
-                                task_list[i].phase, 
-                                task_list[i].relative_deadline, 
-                                task_list[i].virtual_deadline);
+        fprintf(output_file, "Task: %d | core: %d | crit_level: %d | phase: %.2lf | rel_deadline: %.2lf | virt_deadline: %.2lf | ",
+                i,
+                task_list[i].core,
+                task_list[i].criticality_lvl,
+                task_list[i].phase,
+                task_list[i].relative_deadline,
+                task_list[i].virtual_deadline);
         fprintf(output_file, "WCET: ");
         for (j = 0; j < MAX_CRITICALITY_LEVELS; j++)
         {
@@ -93,13 +93,13 @@ void print_job_list(int core_no, job *job_list_head)
     // fprintf(output_file, "\n");
     while (job_temp != NULL)
     {
-        fprintf(output[core_no], "Job:: Task no: %d  Release time: %.2lf  Exec time: %.2lf  Rem Exec time: %.2lf  WCET_counter: %.2lf  Deadline: %.2lf\n", 
-                                job_temp->task_number, 
-                                job_temp->release_time, 
-                                job_temp->execution_time, 
-                                job_temp->rem_exec_time, 
-                                job_temp->WCET_counter, 
-                                job_temp->absolute_deadline);
+        fprintf(output[core_no], "Job:: Task no: %d  Release time: %.2lf  Exec time: %.2lf  Rem Exec time: %.2lf  WCET_counter: %.2lf  Deadline: %.2lf\n",
+                job_temp->task_number,
+                job_temp->release_time,
+                job_temp->execution_time,
+                job_temp->rem_exec_time,
+                job_temp->WCET_counter,
+                job_temp->absolute_deadline);
         job_temp = job_temp->next;
     }
 
@@ -131,12 +131,12 @@ void print_processor(processor_struct *processor)
     fprintf(output_file, "Num cores: %d\n", processor->total_cores);
     for (i = 0; i < processor->total_cores; i++)
     {
-        fprintf(output_file, "Core: %d, total time: %.2lf, total idle time: %.2lf, total busy time: %.2lf, state: %s\n", 
-                                i, 
-                                processor->cores[i].total_time, 
-                                processor->cores[i].total_idle_time, 
-                                processor->cores[i].total_time - processor->cores[i].total_idle_time, 
-                                (processor->cores[i].state == ACTIVE) ? "ACTIVE" : "SHUTDOWN");
+        fprintf(output_file, "Core: %d, total time: %.2lf, total idle time: %.2lf, total busy time: %.2lf, state: %s\n",
+                i,
+                processor->cores[i].total_time,
+                processor->cores[i].total_idle_time,
+                processor->cores[i].total_time - processor->cores[i].total_idle_time,
+                (processor->cores[i].state == ACTIVE) ? "ACTIVE" : "SHUTDOWN");
     }
     fprintf(output_file, "\n");
 }
@@ -165,17 +165,17 @@ double find_actual_execution_time(double exec_time, int task_crit_lvl, int core_
     double n = rand() % 3;
     if (task_crit_lvl <= core_crit_lvl)
     {
-        exec_time = max(1.00, exec_time - n);
+        exec_time = max(1.00, exec_time - 2);
     }
     else
     {
         if (randnum() == 0)
         {
-            exec_time += n;
+            exec_time += 2;
         }
         else
         {
-            exec_time = max(1.00, exec_time - n);
+            exec_time = max(1.00, exec_time - 2);
         }
     }
 
@@ -214,12 +214,12 @@ void reset_virtual_deadlines(task_set_struct **task_set, int num_core, int k)
     return;
 }
 
-int check_all_cores(processor_struct* processor)
+int check_all_cores(processor_struct *processor)
 {
     int flag = 1;
-    for(int i=0; i<processor->total_cores; i++)
+    for (int i = 0; i < processor->total_cores; i++)
     {
-        if(processor->cores[i].ready_queue->num_jobs != 0)
+        if (processor->cores[i].ready_queue->num_jobs != 0)
         {
             flag = 0;
             break;
@@ -228,20 +228,19 @@ int check_all_cores(processor_struct* processor)
     return flag;
 }
 
-int find_max_level(processor_struct* processor, task_set_struct* task_set)
+int find_max_level(processor_struct *processor, task_set_struct *task_set)
 {
     int max_crit_level = MAX_CRITICALITY_LEVELS - 1;
 
-    for(int i=0; i<processor->total_cores; i++)
+    for (int i = 0; i < processor->total_cores; i++)
     {
-        job* temp = processor->cores[i].ready_queue->job_list_head;
+        job *temp = processor->cores[i].ready_queue->job_list_head;
 
-        while(temp)
+        while (temp)
         {
             max_crit_level = (max_crit_level > task_set->task_list[temp->task_number].criticality_lvl) ? max_crit_level : task_set->task_list[temp->task_number].criticality_lvl;
             temp = temp->next;
         }
     }
     return max_crit_level;
-
 }

@@ -136,8 +136,8 @@ typedef struct
     double total_time;
     double total_idle_time;
     double WCET_counter;
-    double next_invocation_time;    
-    
+    double next_invocation_time;
+
     double frequency;
     int state; //ACTIVE or SHUTDOWN
     double *rem_util;
@@ -149,7 +149,6 @@ typedef struct
     int num_tasks_allocated;
 
 } core_struct;
-
 
 /*
     ADT for the processor. 
@@ -176,12 +175,14 @@ typedef struct
     int decision_point;
 } decision_struct;
 
-typedef struct {
+typedef struct
+{
     double x;
     int k;
-}x_factor_struct;
+} x_factor_struct;
 
-typedef struct {
+typedef struct
+{
     double *total_shutdown_time;
     double *total_idle_energy;
     double *total_active_energy;
@@ -190,10 +191,10 @@ typedef struct {
     int *total_completion_points;
     int *total_criticality_change_points;
     int *total_wakeup_points;
-}stats_struct;
+} stats_struct;
 
-FILE* output_file;
-FILE* output[NUM_CORES];
+FILE *output_file;
+FILE *output[NUM_CORES];
 stats_struct *stats;
 
 double frequency[FREQUENCY_LEVELS];

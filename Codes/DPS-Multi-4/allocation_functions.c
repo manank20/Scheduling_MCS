@@ -38,7 +38,7 @@ int allocate(task_set_struct *task_set, int task_number, processor_struct *proce
     int k;
     int num_core = 0;
 
-L1: ;
+L1:;
     fprintf(output_file, "Task: %d, Core: %d, Crit level: %d | ", task_number, num_core, crit_level);
     int flag = 1;
     for (k = 0; k < crit_level; k++)
@@ -54,7 +54,7 @@ L1: ;
     if (flag != 0)
     {
         flag = 0;
-        
+
         if (exceptional_task == EXCEPTIONAL || (total_util[num_core][crit_level] + task_set->task_list[task_number].util[crit_level]) <= MAX_UTIL[crit_level])
         {
             task_set->task_list[task_number].core = num_core;
@@ -110,10 +110,10 @@ L1: ;
         }
         goto L1;
     }
-    else {
+    else
+    {
         return 1;
     }
-
 }
 
 int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *processor)
@@ -123,13 +123,13 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
     int crit_level, num_core;
     double non_shutdown_utilisation = 0.00;
     int total_tasks = task_set->total_tasks;
-    
+
     //Maximum utilisation per criticality level allowed for each core.
     MAX_UTIL[0] = 1.00, MAX_UTIL[1] = 0.6, MAX_UTIL[2] = 0.5, MAX_UTIL[3] = 0.5;
-        
-    for(i=0; i<processor->total_cores; i++)
+
+    for (i = 0; i < processor->total_cores; i++)
     {
-        for(crit_level = 0; crit_level < MAX_CRITICALITY_LEVELS; crit_level++)
+        for (crit_level = 0; crit_level < MAX_CRITICALITY_LEVELS; crit_level++)
         {
             total_util[i][crit_level] = 0.00;
         }
@@ -151,9 +151,10 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
 
     //Calculate the total utilisation of non-shutdown tasks.
     fprintf(output_file, "Non shutdown tasks are:\n");
-    for(i=0; i<total_tasks; i++)
+    for (i = 0; i < total_tasks; i++)
     {
-        if(task_set->task_list[i].shutdown == NON_SHUTDOWN_TASK){
+        if (task_set->task_list[i].shutdown == NON_SHUTDOWN_TASK)
+        {
             fprintf(output_file, "%d ", i);
             non_shutdown_utilisation += task_set->task_list[i].util[task_set->task_list[i].criticality_lvl];
         }
@@ -187,7 +188,7 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
         num_core = 0;
         i = 0;
 
-        for(i=0; i<total_tasks; i++)
+        for (i = 0; i < total_tasks; i++)
         {
             if (task_set->task_list[i].shutdown == NON_SHUTDOWN_TASK && task_set->task_list[i].core == -1 && task_set->task_list[i].criticality_lvl == crit_level)
             {
@@ -208,7 +209,7 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
     {
         num_core = 0;
         i = 0;
-        for(i=0; i<total_tasks; i++)
+        for (i = 0; i < total_tasks; i++)
         {
             if (task_set->task_list[i].shutdown == SHUTDOWN_TASK && task_set->task_list[i].core == -1 && task_set->task_list[i].criticality_lvl == crit_level)
             {
@@ -225,10 +226,12 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
 
     for (i = 0; i < processor->total_cores; i++)
     {
-        if(processor->cores[i].num_tasks_allocated == 0) {
+        if (processor->cores[i].num_tasks_allocated == 0)
+        {
             processor->cores[i].state = SHUTDOWN;
         }
-        else {
+        else
+        {
             processor->cores[i].state = ACTIVE;
             fprintf(output_file, "Core: %d, x factor: %.5lf, K value: %d\n", i, processor->cores[i].x_factor, processor->cores[i].threshold_crit_lvl);
             set_virtual_deadlines(&task_set, i, processor->cores[i].x_factor, processor->cores[i].threshold_crit_lvl);

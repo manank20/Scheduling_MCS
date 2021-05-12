@@ -18,7 +18,7 @@ job *find_job_list(double start_time, double end_time, task_set_struct *task_set
     double release_time;
     task curr_task;
     int total_jobs = 0;
-    
+
     for (i = 0; i < task_set->total_tasks; i++)
     {
         if (task_set->task_list[i].criticality_lvl >= curr_crit_level && task_set->task_list[i].core == core_no)
@@ -94,7 +94,7 @@ double find_procrastination_interval(double curr_time, task_set_struct *task_set
         if (task_set->task_list[i].criticality_lvl >= curr_crit_level && task_set->task_list[i].core == core_no)
         {
             int job_number = task_set->task_list[i].job_number;
-            while((release_time = task_set->task_list[i].phase + task_set->task_list[i].period * job_number) < curr_time)
+            while ((release_time = task_set->task_list[i].phase + task_set->task_list[i].period * job_number) < curr_time)
                 job_number++;
             absolute_deadline = release_time + task_set->task_list[i].virtual_deadline;
             crit_level = task_set->task_list[i].criticality_lvl;
@@ -120,7 +120,7 @@ double find_procrastination_interval(double curr_time, task_set_struct *task_set
         if (task_set->task_list[i].criticality_lvl >= curr_crit_level && task_set->task_list[i].core == core_no)
         {
             int job_number = task_set->task_list[i].job_number;
-            while((release_time = task_set->task_list[i].phase + task_set->task_list[i].period * job_number) <= next_deadline1)
+            while ((release_time = task_set->task_list[i].phase + task_set->task_list[i].period * job_number) <= next_deadline1)
                 job_number++;
             job_number--;
             release_time = task_set->task_list[i].phase + task_set->task_list[i].period * job_number;

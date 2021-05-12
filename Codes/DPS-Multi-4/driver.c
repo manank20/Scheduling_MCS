@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     frequency[4] = 1.00;
 
     //Open the output file here.
-    for(int i=0; i<processor->total_cores; i++)
+    for (int i = 0; i < processor->total_cores; i++)
     {
         char filename[15] = "output_";
         char ext[2];
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
     statistics_file = fopen("statistics.txt", "w");
     fprintf(statistics_file, "STATISTICS FOR ALL CORES\n");
-    for(int i=0; i<NUM_CORES; i++)
+    for (int i = 0; i < NUM_CORES; i++)
     {
         fprintf(statistics_file, "Core %d\n", i);
         fprintf(statistics_file, "\
@@ -73,20 +73,20 @@ int main(int argc, char *argv[])
             Total wakeup points: %d\n\
             Total crit change points: %d\n\
             Total context switches: %d\n",
-            stats->total_active_energy[i],
-            stats->total_idle_energy[i],
-            stats->total_shutdown_time[i],
-            stats->total_arrival_points[i],
-            stats->total_completion_points[i],
-            stats->total_wakeup_points[i],
-            stats->total_criticality_change_points[i],
-            stats->total_context_switches[i]);
+                stats->total_active_energy[i],
+                stats->total_idle_energy[i],
+                stats->total_shutdown_time[i],
+                stats->total_arrival_points[i],
+                stats->total_completion_points[i],
+                stats->total_wakeup_points[i],
+                stats->total_criticality_change_points[i],
+                stats->total_context_switches[i]);
         fprintf(statistics_file, "\n");
     }
 
     fclose(statistics_file);
     fclose(task_file);
-    for(int i=0; i<NUM_CORES; i++)
+    for (int i = 0; i < NUM_CORES; i++)
     {
         fclose(output[i]);
     }

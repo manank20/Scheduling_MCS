@@ -58,70 +58,78 @@ x_factor_struct check_schedulability(task_set_struct *task_set, int core_no)
     print_total_utilisation(total_utilisation);
 
     //Condition to be checked for feasible tasksets. The condition is given in 2015 Baruah's paper - page 7.
-    for(i=0; i<MAX_CRITICALITY_LEVELS; i++){
+    for (i = 0; i < MAX_CRITICALITY_LEVELS; i++)
+    {
         check_utilisation = 0.0;
-        for(j=i; j<MAX_CRITICALITY_LEVELS; j++){
+        for (j = i; j < MAX_CRITICALITY_LEVELS; j++)
+        {
             check_utilisation += total_utilisation[j][i];
-        }  
+        }
 
-        //If check_utilisation is greater than 1, the task set is not feasible on unit speed processor. 
-        if(check_utilisation > 1){
+        //If check_utilisation is greater than 1, the task set is not feasible on unit speed processor.
+        if (check_utilisation > 1)
+        {
             check_feasibility = 0;
             break;
         }
-
     }
 
     //If check_feasibility is zero, then the taskset is not feasible on a unit speed processor.
-    if(check_feasibility == 0){
+    if (check_feasibility == 0)
+    {
         x_factor.x = 0.00;
         return x_factor;
     }
 
     check_utilisation = 0.0;
-    for(criticality_lvl=0; criticality_lvl<MAX_CRITICALITY_LEVELS; criticality_lvl++){
+    for (criticality_lvl = 0; criticality_lvl < MAX_CRITICALITY_LEVELS; criticality_lvl++)
+    {
         check_utilisation += total_utilisation[criticality_lvl][criticality_lvl];
     }
 
     //If all tasks are able to execute the worst case execution time of their respective criticality level, that is, check_utilisation <= 1
     //then the taskset is schedulable and thus, the virtual deadlines are equal to their relative deadlines.
-    if(check_utilisation <= 1){
+    if (check_utilisation <= 1)
+    {
         x_factor.x = 1.00;
         x_factor.k = MAX_CRITICALITY_LEVELS - 1;
         return x_factor;
     }
 
     //We find the first k for which the required condition is satisfied. Condition given in 2015 Baruah's paper - Page 10, Section 3.2
-    for(criticality_lvl=0; criticality_lvl<MAX_CRITICALITY_LEVELS - 1; criticality_lvl++){
+    for (criticality_lvl = 0; criticality_lvl < MAX_CRITICALITY_LEVELS - 1; criticality_lvl++)
+    {
         x = 0.00;
         check1 = 0.00;
 
         util_LO_LO = 0;
         util_HI_LO = 0;
         util_HI_HI = 0;
-    
+
         //Calculating the required quantities as specified in paper.
-        for(j=0; j<=criticality_lvl; j++){
+        for (j = 0; j <= criticality_lvl; j++)
+        {
             util_LO_LO += total_utilisation[j][j];
         }
 
-        if(util_LO_LO > 1)
+        if (util_LO_LO > 1)
             continue;
 
-        for(j=criticality_lvl + 1; j<MAX_CRITICALITY_LEVELS; j++){
+        for (j = criticality_lvl + 1; j < MAX_CRITICALITY_LEVELS; j++)
+        {
             util_HI_HI += total_utilisation[j][j];
             util_HI_LO += total_utilisation[j][criticality_lvl];
         }
-  
-        x = (double) util_HI_LO / (double) (1 - util_LO_LO);
 
-        check1 = x*util_LO_LO + util_HI_HI;
+        x = (double)util_HI_LO / (double)(1 - util_LO_LO);
 
-        if(check1 <= 1.00) {
+        check1 = x * util_LO_LO + util_HI_HI;
+
+        if (check1 <= 1.00)
+        {
             x_factor.x = x;
             x_factor.k = criticality_lvl;
             return x_factor;
-        
         }
     }
 
