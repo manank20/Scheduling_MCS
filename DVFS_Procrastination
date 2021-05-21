@@ -122,3 +122,8 @@ Points to consider:
 1. should we use relative deadline for higher criticality utilisation?
 2. should we consider partial utilisation for lower priority jobs in higher utilisation?
 3. How to ensure that the dynamic utilisation is less than 1? Is it necessary? 
+4. Is it necessary to decrease the criticality levels?
+
+Observations:
+1. The active time increased and the idle and shutdown times decreased. 
+2. Using discrete frequency levels instead of continuous ones.

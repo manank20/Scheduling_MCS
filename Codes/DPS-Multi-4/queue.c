@@ -177,6 +177,8 @@ void remove_jobs_from_ready_queue(job_queue_struct **ready_queue, job_queue_stru
                 temp->absolute_deadline -= task_list[temp->task_number].virtual_deadline;
                 temp->absolute_deadline += task_list[temp->task_number].relative_deadline;
             }
+            temp->WCET_counter -= (task_list[temp->task_number].WCET[curr_crit_lvl - 1]);
+            temp->WCET_counter += (task_list[temp->task_number].WCET[curr_crit_lvl]);
             temp = temp->next;
         }
     }
@@ -197,7 +199,8 @@ void remove_jobs_from_ready_queue(job_queue_struct **ready_queue, job_queue_stru
 void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_queue_struct **discarded_queue, task_set_struct *task_set, int core_no, int curr_crit_level, double curr_time, int same_core)
 {
     job *discarded_job, *ready_job, *temp;
-    double max_slack, rem_exec_time;
+    double max_slack, rem_exec_time, U_dyn;
+    int task_number, crit_level;
 
     fprintf(output[core_no], "Discarded job list\n");
     print_job_list(core_no, (*discarded_queue)->job_list_head);
@@ -214,15 +217,19 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
         {
             discarded_job = (*discarded_queue)->job_list_head;
             max_slack = find_max_slack(task_set, curr_crit_level, core_no, discarded_job->absolute_deadline, curr_time, (*ready_queue));
-            rem_exec_time = discarded_job->rem_exec_time;
-            fprintf(output[core_no], "Discarded job: %d, max slack: %.5lf, rem exec time: %.5lf\n", discarded_job->task_number, max_slack, rem_exec_time);
+            task_number = discarded_job->task_number;
+            crit_level = task_set->task_list[task_number].criticality_lvl;
+            rem_exec_time = task_set->task_list[task_number].WCET[crit_level] - (discarded_job->execution_time - discarded_job->rem_exec_time);
 
-            if (max_slack > rem_exec_time)
+            fprintf(output[core_no], "Discarded job: %d, U_dyn: %.5lf, Max slack: %.5lf, Exec time: %.5lf, Max util: %.5lf\n", discarded_job->task_number, U_dyn, max_slack, rem_exec_time, (rem_exec_time / (discarded_job->absolute_deadline - curr_time)));
+
+            if(max_slack > rem_exec_time)
+            // if ((1.00 - U_dyn) > (rem_exec_time / (discarded_job->absolute_deadline - curr_time)))
             {
+                fprintf(output[core_no], "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
                 (*discarded_queue)->job_list_head = (*discarded_queue)->job_list_head->next;
                 (*discarded_queue)->num_jobs--;
                 discarded_job->next = NULL;
-                fprintf(output[core_no], "Job %d,%d inserted in ready queue of core %d\n", discarded_job->task_number, discarded_job->job_number, core_no);
                 insert_job_in_ready_queue(ready_queue, discarded_job);
             }
             else
@@ -245,16 +252,19 @@ void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue, job_qu
         if (same_core == 0 || (same_core == 1 && task_set->task_list[temp->next->task_number].core == core_no))
         {
             max_slack = find_max_slack(task_set, curr_crit_level, core_no, temp->next->absolute_deadline, curr_time, (*ready_queue));
-            rem_exec_time = temp->next->rem_exec_time;
-            fprintf(output[core_no], "Discarded job: %d, max slack: %.5lf, rem exec time: %.5lf\n", temp->next->task_number, max_slack, rem_exec_time);
+            int task_number = temp->next->task_number;
+            int crit_level = task_set->task_list[task_number].criticality_lvl;
+            rem_exec_time = task_set->task_list[task_number].WCET[crit_level] - (temp->next->execution_time - temp->next->rem_exec_time);
+            fprintf(output[core_no], "Discarded job: %d, U_dyn: %.5lf, Max slack: %.5lf, Exec time: %.5lf, max util: %.5lf\n", temp->next->task_number, U_dyn, max_slack, rem_exec_time, (rem_exec_time / (temp->next->absolute_deadline - curr_time)));
 
-            if (max_slack > rem_exec_time)
+            if(max_slack > rem_exec_time)
+            // if ((1.00 - U_dyn) > (rem_exec_time / (temp->next->absolute_deadline - curr_time)))
             {
                 ready_job = temp->next;
                 temp->next = temp->next->next;
                 ready_job->next = NULL;
                 (*discarded_queue)->num_jobs--;
-                fprintf(output[core_no], "Job %d,%d inserted in ready queue of core %d\n", temp->task_number, temp->job_number, core_no);
+                fprintf(output[core_no], "Job %d,%d inserted in ready queue of core %d\n", ready_job->task_number, ready_job->job_number, core_no);
                 insert_job_in_ready_queue(ready_queue, ready_job);
             }
             else

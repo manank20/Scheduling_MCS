@@ -2,7 +2,7 @@
 
 int randnum()
 {
-    int num = 16;
+    int num = 4;
     int val = 0;
     for (int i = 0; i < num; i++)
         val |= (rand() & 1);
@@ -35,6 +35,16 @@ double min(double a, double b)
 double max(double a, double b)
 {
     return (a > b) ? a : b;
+}
+
+int max_int(int a, int b)
+{
+    return (a > b) ? a : b;
+}
+
+int min_int(int a, int b)
+{
+    return (a < b) ? a : b;
 }
 
 /*Custom comparator for sorting the task list*/
@@ -165,17 +175,17 @@ double find_actual_execution_time(double exec_time, int task_crit_lvl, int core_
     double n = rand() % 3;
     if (task_crit_lvl <= core_crit_lvl)
     {
-        exec_time = max(1.00, exec_time - 2);
+        exec_time = max(1.00, exec_time - n);
     }
     else
     {
         if (randnum() == 0)
         {
-            exec_time += 2;
+            exec_time += n;
         }
         else
         {
-            exec_time = max(1.00, exec_time - 2);
+            exec_time = max(1.00, exec_time - n);
         }
     }
 
@@ -212,6 +222,36 @@ void reset_virtual_deadlines(task_set_struct **task_set, int num_core, int k)
             (*task_set)->task_list[i].virtual_deadline = (*task_set)->task_list[i].relative_deadline;
     }
     return;
+}
+
+void set_execution_times(job* curr_job, double frequency)
+{
+    curr_job->execution_time /= frequency;
+    curr_job->rem_exec_time /= frequency;
+    curr_job->WCET_counter /= frequency;
+}
+
+void reset_execution_times(job* curr_job, double frequency)
+{
+    curr_job->execution_time *= frequency;
+    curr_job->rem_exec_time *= frequency;
+    curr_job->WCET_counter *= frequency;
+}
+
+void set_utilisation(task* curr_task, int curr_crit_level, double exec_time)
+{
+    for(int i=curr_crit_level; i<=(*curr_task).criticality_lvl; i++)
+    {
+        (*curr_task).AET[i] = exec_time;
+    }
+}
+
+void reset_utilisation(task* curr_task, int curr_crit_level)
+{
+    for(int i=curr_crit_level; i<=(*curr_task).criticality_lvl; i++)
+    {
+        (*curr_task).AET[i] = (*curr_task).WCET[i];
+    }
 }
 
 int check_all_cores(processor_struct *processor)

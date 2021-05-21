@@ -54,6 +54,7 @@ typedef struct
     double relative_deadline;
     int criticality_lvl;
     double WCET[MAX_CRITICALITY_LEVELS];
+    double AET[MAX_CRITICALITY_LEVELS];
     double virtual_deadline;
     int core;
     int job_number;

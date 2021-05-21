@@ -83,6 +83,8 @@ extern void insert_discarded_jobs_in_ready_queue(job_queue_struct **ready_queue,
 extern double gcd(double a, double b);
 extern double min(double a, double b);
 extern double max(double a, double b);
+extern int max_int(int a, int b);
+extern int min_int(int a, int b);
 extern int period_comparator(const void *p, const void *q);
 extern void print_task_list(task_set_struct *task_set);
 extern void print_job_list(int core_no, job *job_list_head);
@@ -92,6 +94,10 @@ extern int compare_jobs(job *A, job *B);
 extern double find_actual_execution_time(double exec_time, int task_crit_lvl, int core_crit_lvl);
 extern void set_virtual_deadlines(task_set_struct **task_set, int core_no, double x, int k);
 extern void reset_virtual_deadlines(task_set_struct **task_set, int core_no, int k);
+extern void set_execution_times(job* curr_job, double frequency);
+extern void reset_execution_times(job* curr_job, double frequency);
+extern void set_utilisation(task* task, int curr_crit_level, double exec_time);
+extern void reset_utilisation(task* task, int curr_crit_level);
 extern int check_all_cores(processor_struct *processor);
 extern int find_max_level(processor_struct *processor, task_set_struct *task_set);
 /*-------------------------------------------------------------------------*/

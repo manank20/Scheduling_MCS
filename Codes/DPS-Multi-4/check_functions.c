@@ -55,9 +55,7 @@ x_factor_struct check_schedulability(task_set_struct *task_set, int core_no)
 
     find_total_utilisation(total_tasks, tasks_list, total_utilisation, core_no);
 
-    print_total_utilisation(total_utilisation);
-
-    //Condition to be checked for feasible tasksets. The condition is given in 2015 Baruah's paper - page 7.
+    //Condition to be checked for feasible tasksets. The total utilisation at each criticality level should be less than 1.
     for (i = 0; i < MAX_CRITICALITY_LEVELS; i++)
     {
         check_utilisation = 0.0;
