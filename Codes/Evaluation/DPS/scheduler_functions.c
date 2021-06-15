@@ -202,18 +202,14 @@ double find_max_slack(task_set_struct *task_set, int crit_level, int core_no, do
 {
     int i, task_number, task_crit_level;
     double max_slack = deadline - curr_time;
-    double U_dyn = 0.00;
 
-    fprintf(output[core_no], "Function to find maximum slack\n");
-    fprintf(output[core_no], "Max slack: %.5lf, Deadline: %.5lf, Curr time: %.5lf\n", max_slack, deadline, curr_time);
+    // fprintf(output[core_no], "Function to find maximum slack\n");
+    // fprintf(output[core_no], "Max slack: %.5lf, Deadline: %.5lf, Curr time: %.5lf\n", max_slack, deadline, curr_time);
 
     job *temp = ready_queue->job_list_head;
     double earliest_deadline = deadline;
-    // if(temp != NULL)
-    // {
-    //     earliest_deadline = min(earliest_deadline, temp->absolute_deadline);
-    // }
-    fprintf(output[core_no], "Traversing ready queue\n");
+
+    // fprintf(output[core_no], "Traversing ready queue\n");
 
     //First traverse the ready queue and update the maximum slack according to remaining execution time of jobs.
     while (temp)
@@ -221,15 +217,13 @@ double find_max_slack(task_set_struct *task_set, int crit_level, int core_no, do
         task_number = temp->task_number;
         task_crit_level = task_set->task_list[task_number].criticality_lvl;
         double rem_exec_time = task_set->task_list[task_number].WCET[task_crit_level] - (temp->execution_time - temp->rem_exec_time);
-        // if(temp->absolute_deadline > deadline)
-        //     rem_exec_time *= ((deadline - curr_time) / task_set->task_list[task_number].virtual_deadline);
+
         max_slack -= rem_exec_time;
-        U_dyn += (rem_exec_time / (temp->absolute_deadline - curr_time));
-        fprintf(output[core_no], "Job: %d, rem execution time: %.5lf, deadline: %.5lf, max slack: %.5lf, U_dyn: %.5lf\n", temp->task_number, rem_exec_time, temp->absolute_deadline, max_slack, U_dyn);
+        // fprintf(output[core_no], "Job: %d, rem execution time: %.5lf, deadline: %.5lf, max slack: %.5lf\n", temp->task_number, rem_exec_time, temp->absolute_deadline, max_slack);
         temp = temp->next;
     }
 
-    fprintf(output[core_no], "Traversing task list\n");
+    // fprintf(output[core_no], "Traversing task list\n");
     //Then, traverse the task list and update the maximum slack according to future invocations of the tasks.
     for (i = 0; i < task_set->total_tasks; i++)
     {
@@ -242,19 +236,14 @@ double find_max_slack(task_set_struct *task_set, int crit_level, int core_no, do
             // curr_jobs++;
             while ((release_time = (task_set->task_list[i].phase + task_set->task_list[i].period * curr_jobs)) < earliest_deadline)
             {
-                double task_deadline = release_time + task_set->task_list[i].virtual_deadline;
-                // if(task_deadline > earliest_deadline)
-                //     exec_time *= ((earliest_deadline - release_time) / task_set->task_list[i].virtual_deadline);
                 max_slack -= exec_time;
-                U_dyn += (exec_time / (earliest_deadline - curr_time));
-                fprintf(output[core_no], "Task: %d, exec time: %.5lf, deadline: %.5lf, max slack: %.5lf, U_dyn: %.5lf\n", i, exec_time, task_deadline, max_slack, U_dyn);
+                // fprintf(output[core_no], "Task: %d, exec time: %.5lf, deadline: %.5lf, max slack: %.5lf\n", i, exec_time, task_deadline, max_slack);
                 curr_jobs++;
             }
         }
     }
 
     return max(max_slack, 0.00);
-    // return U_dyn;
 }
 
 void accommodate_discarded_jobs(job_queue_struct **ready_queue, job_queue_struct **discarded_queue, task_set_struct *task_set, int core_no, int curr_crit_level, double curr_time)
@@ -353,29 +342,20 @@ void update_job_arrivals(job_queue_struct **ready_queue, job_queue_struct **disc
                     new_job = (job *)malloc(sizeof(job));
                     find_job_parameters(task_list, new_job, curr_task, task_list[curr_task].job_number, release_time, curr_crit_level);
 
-
                     fprintf(output[core_no], "Job %d,%d arrived | ", curr_task, task_list[curr_task].job_number);
                     if (crit_level >= curr_crit_level)
                     {
                         fprintf(output[core_no], "Normal job| Exec time: %.5lf | %s\n", new_job->execution_time, (new_job->execution_time > task_set->task_list[curr_task].WCET[curr_crit_level]) ? "More" : "Less");
-
-                        //Reset the utilisation of newly arrived task.
-                        for(int l=curr_crit_level; l<=crit_level; l++)
-                        {
-                            task_set->task_list[curr_task].AET[l] = task_set->task_list[curr_task].WCET[l];
-                        }
-
                         insert_job_in_ready_queue(ready_queue, new_job);
                     }
                     else
                     {
-                        fprintf(output[core_no], "Discarded job | ");    
-                        double max_slack=0.00, U_dyn=0.00;    
+                        fprintf(output[core_no], "Discarded job | ");
+                        double max_slack = 0.00;
                         max_slack = find_max_slack(task_set, curr_crit_level, core_no, deadline, curr_time, (*ready_queue));
-                        fprintf(output[core_no], "U_dyn: %.5lf, Max slack: %.5lf, Max exec: %.5lf, Max util: %.5lf | ", U_dyn, max_slack, max_exec_time, (max_exec_time / (new_job->absolute_deadline - curr_time)));
-                        
-                        if(max_slack > max_exec_time)
-                        // if ((1.00 - U_dyn) >= (max_exec_time / (new_job->absolute_deadline - curr_time)))
+                        fprintf(output[core_no], "Max slack: %.5lf, Max exec: %.5lf | ", max_slack, max_exec_time);
+
+                        if (max_slack > max_exec_time)
                         {
                             fprintf(output[core_no], "Inserting in ready queue\n");
                             insert_job_in_ready_queue(ready_queue, new_job);
@@ -432,7 +412,6 @@ void update_job_removal(task_set_struct *taskset, job_queue_struct **ready_queue
 void schedule_new_job(core_struct *core, job_queue_struct *ready_queue, task_set_struct *task_set)
 {
     (*core).curr_exec_job = ready_queue->job_list_head;
-    set_execution_times((*core).curr_exec_job, (*core).frequency);
     (*core).curr_exec_job->scheduled_time = (*core).total_time;
     (*core).curr_exec_job->completion_time = (*core).total_time + (*core).curr_exec_job->rem_exec_time;
     (*core).WCET_counter = (*core).curr_exec_job->scheduled_time + (*core).curr_exec_job->WCET_counter;
@@ -544,9 +523,6 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                 double exec_time = processor->cores[decision_core].total_time - prev_decision_time;
                 processor->cores[decision_core].curr_exec_job->rem_exec_time -= exec_time;
                 processor->cores[decision_core].curr_exec_job->WCET_counter -= exec_time;
-
-                reset_execution_times(processor->cores[decision_core].curr_exec_job, processor->cores[decision_core].frequency);
-                fprintf(output[decision_core], "Curr job: %d,%d. Exec time: %.2lf, Rem exec time: %.2lf\n", processor->cores[decision_core].ready_queue->job_list_head->task_number, processor->cores[decision_core].ready_queue->job_list_head->job_number, processor->cores[decision_core].ready_queue->job_list_head->execution_time, processor->cores[decision_core].ready_queue->job_list_head->rem_exec_time);
             }
 
             //Update the newly arrived jobs in the ready queue. Discarded jobs can be inserted in ready queue or discarded queue depeneding on the maximum slack available.
@@ -560,13 +536,11 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                 {
                     fprintf(output[decision_core], "Preempt current job | ");
                 }
+                if (processor->cores[decision_core].ready_queue->num_jobs != 0)
+                {
+                    schedule_new_job(&(processor->cores[decision_core]), processor->cores[decision_core].ready_queue, task_set);
+                }
                 stats->total_context_switches[decision_core]++;
-            }
-
-            if(processor->cores[decision_core].ready_queue->num_jobs != 0){
-                la_edf(&(processor->cores[decision_core]), task_set, processor->crit_level, decision_core);
-                fprintf(output[decision_core], "No segment fault\n");
-                schedule_new_job(&(processor->cores[decision_core]), processor->cores[decision_core].ready_queue, task_set);
             }
         }
 
@@ -576,10 +550,7 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
             double procrastionation_interval;
             fprintf(output[decision_core], "Job %d, %d completed execution | ", processor->cores[decision_core].curr_exec_job->task_number, processor->cores[decision_core].curr_exec_job->job_number);
 
-            reset_execution_times(processor->cores[decision_core].curr_exec_job, processor->cores[decision_core].frequency);
-
             //Check to see if the job has missed its deadline or not.
-            int task_number = processor->cores[decision_core].curr_exec_job->task_number;
             double deadline = processor->cores[decision_core].curr_exec_job->absolute_deadline;
             if (deadline < processor->cores[decision_core].total_time)
             {
@@ -587,12 +558,6 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                 processor->cores[decision_core].curr_exec_job = NULL;
                 break;
             }
-
-            //Set utilisation of current job based on its execution time.
-            for(int l=processor->crit_level; l<=task_set->task_list[task_number].criticality_lvl; l++)
-            {
-                task_set->task_list[task_number].AET[l] = processor->cores[decision_core].curr_exec_job->execution_time;
-            }            
 
             processor->cores[decision_core].curr_exec_job = NULL;
             //Remove the completed job from the ready queue.
@@ -639,9 +604,8 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
 
                     //Accommodate discarded jobs in ready queue.
                     accommodate_discarded_jobs(&(processor->cores[decision_core].ready_queue), &discarded_queue, task_set, decision_core, processor->crit_level, processor->cores[decision_core].total_time);
-                    if(processor->cores[decision_core].ready_queue->num_jobs != 0)
+                    if (processor->cores[decision_core].ready_queue->num_jobs != 0)
                     {
-                        processor->cores[decision_core].frequency = 1.00;
                         schedule_new_job(&(processor->cores[decision_core]), processor->cores[decision_core].ready_queue, task_set);
                     }
                 }
@@ -649,7 +613,6 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
             else
             {
                 stats->total_context_switches[decision_core]++;
-                la_edf(&(processor->cores[decision_core]), task_set, processor->crit_level, decision_core);
                 schedule_new_job(&(processor->cores[decision_core]), processor->cores[decision_core].ready_queue, task_set);
             }
         }
@@ -659,7 +622,6 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
         {
             //Wakeup the core and schedule the high priority process.
             processor->cores[decision_core].state = ACTIVE;
-            processor->cores[decision_core].frequency = 1.00;
             processor->cores[decision_core].total_idle_time += (decision_time - prev_decision_time);
             stats->total_shutdown_time[decision_core] += (decision_time - prev_decision_time);
 
@@ -676,7 +638,7 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
             {
                 double procrastination_interval = find_procrastination_interval(processor->cores[decision_core].total_time, task_set, processor->crit_level, decision_core);
                 fprintf(output[decision_core], "No jobs to execute | Procrastination interval: %.2lf\n", procrastination_interval);
-                if(procrastination_interval > SHUTDOWN_THRESHOLD)
+                if (procrastination_interval > SHUTDOWN_THRESHOLD)
                 {
                     fprintf(output[decision_core], "Putting core to sleep again\n");
                     processor->cores[decision_core].state = SHUTDOWN;
@@ -686,9 +648,8 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                 {
                     fprintf(output[decision_core], "Not putting core to sleep\n");
                     accommodate_discarded_jobs(&(processor->cores[decision_core].ready_queue), &discarded_queue, task_set, decision_core, processor->crit_level, processor->cores[decision_core].total_time);
-                    if(processor->cores[decision_core].ready_queue->num_jobs != 0)
+                    if (processor->cores[decision_core].ready_queue->num_jobs != 0)
                     {
-                        processor->cores[decision_core].frequency = 1.00;
                         schedule_new_job(&(processor->cores[decision_core]), processor->cores[decision_core].ready_queue, task_set);
                     }
                 }
@@ -710,7 +671,12 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                 if (processor->crit_level > processor->cores[num_core].threshold_crit_lvl)
                     reset_virtual_deadlines(&task_set, num_core, processor->cores[num_core].threshold_crit_lvl);
 
-                fprintf(output[num_core], "Core: %d | Criticality changed | Crit level: %d | State: %s\n", num_core, processor->crit_level, processor->cores[num_core].state == ACTIVE ? "ACTIVE" : "SHUTDOWN");
+                fprintf(output[num_core], "Core: %d, Total time: %.5lf, Total idle time: %.5lf | Criticality changed | Crit level: %d | State: %s\n",
+                        decision_core,
+                        processor->cores[decision_core].total_time,
+                        processor->cores[decision_core].total_idle_time,
+                        processor->crit_level,
+                        processor->cores[num_core].state == ACTIVE ? "ACTIVE" : "SHUTDOWN");
 
                 if (processor->cores[num_core].state == ACTIVE)
                 {
@@ -728,8 +694,6 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                         processor->cores[num_core].curr_exec_job->WCET_counter -= (processor->cores[num_core].total_time - core_prev_decision_time);
 
                         stats->total_active_energy[num_core] += (processor->cores[num_core].total_time - core_prev_decision_time);
-
-                        reset_execution_times(processor->cores[num_core].curr_exec_job, processor->cores[num_core].frequency);
                     }
                     else
                     {
@@ -750,8 +714,14 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
                     if (processor->cores[num_core].ready_queue->num_jobs != 0)
                     {
                         stats->total_context_switches[num_core]++;
-                        la_edf(&(processor->cores[num_core]), task_set, processor->crit_level, num_core);
                         schedule_new_job(&processor->cores[num_core], processor->cores[num_core].ready_queue, task_set);
+                        fprintf(output[num_core], "Scheduled job: %d,%d  Exec time: %.5lf  Rem exec time: %.5lf  WCET_counter: %.5lf  Deadline: %.5lf\n",
+                                processor->cores[num_core].curr_exec_job->task_number,
+                                processor->cores[num_core].curr_exec_job->job_number,
+                                processor->cores[num_core].curr_exec_job->execution_time,
+                                processor->cores[num_core].curr_exec_job->rem_exec_time,
+                                processor->cores[num_core].WCET_counter,
+                                processor->cores[num_core].curr_exec_job->absolute_deadline);
                     }
                 }
             }

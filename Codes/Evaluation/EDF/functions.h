@@ -63,11 +63,6 @@ extern double find_max_slack(task_set_struct *task_set, int crit_level, int core
 extern double find_procrastination_interval(double curr_time, task_set_struct *task_set, int curr_crit_level, int core_no);
 /*-------------------------------------------------------------------------------*/
 
-/*---------------------------DVFS FUNCTIONS---------------------------*/
-extern void select_frequency(core_struct *core, task_set_struct *task_set, int curr_crit_level, int core_no);
-extern void la_edf(core_struct* core, task_set_struct* task_set, int curr_crit_level, int core_no);
-/*--------------------------------------------------------------------*/
-
 /*---------------------------CHECK FUNCTIONS---------------------------*/
 extern x_factor_struct check_schedulability(task_set_struct *task_set, int core_no);
 /*---------------------------------------------------------------------*/
