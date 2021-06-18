@@ -14,8 +14,7 @@
 //Decision points
 #define ARRIVAL 0
 #define COMPLETION 1
-#define TIMER_EXPIRE 2
-#define CRIT_CHANGE 3
+#define CRIT_CHANGE 2
 
 //State of core
 #define ACTIVE 100
@@ -59,6 +58,7 @@ typedef struct
     int core;
     int job_number;
     double *util;
+    double *exec_times;
     int shutdown;
 } task;
 
@@ -137,7 +137,6 @@ typedef struct
     double total_time;
     double total_idle_time;
     double WCET_counter;
-    double next_invocation_time;
 
     double frequency;
     int state; //ACTIVE or SHUTDOWN

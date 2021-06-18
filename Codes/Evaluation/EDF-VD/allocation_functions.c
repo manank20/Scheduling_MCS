@@ -17,7 +17,6 @@ processor_struct *initialize_processor()
         processor->cores[i].total_time = 0.0f;
         processor->cores[i].total_idle_time = 0.0f;
         processor->cores[i].state = ACTIVE;
-        processor->cores[i].next_invocation_time = INT_MAX;
         processor->cores[i].is_shutdown = -1;
         processor->cores[i].frequency = 1.00;
 

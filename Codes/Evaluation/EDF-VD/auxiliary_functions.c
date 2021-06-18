@@ -284,3 +284,18 @@ int find_max_level(processor_struct *processor, task_set_struct *task_set)
     }
     return max_crit_level;
 }
+
+stats_struct* initialize_stats_struct()
+{
+    stats = malloc(sizeof(stats_struct));
+    stats->total_active_energy = calloc(NUM_CORES, sizeof(double));
+    stats->total_idle_energy = calloc(NUM_CORES, sizeof(double));
+    stats->total_shutdown_time = calloc(NUM_CORES, sizeof(double));
+    stats->total_arrival_points = calloc(NUM_CORES, sizeof(int));
+    stats->total_completion_points = calloc(NUM_CORES, sizeof(int));
+    stats->total_criticality_change_points = calloc(NUM_CORES, sizeof(int));
+    stats->total_wakeup_points = calloc(NUM_CORES, sizeof(int));
+    stats->total_context_switches = calloc(NUM_CORES, sizeof(int));
+
+    return stats;
+}

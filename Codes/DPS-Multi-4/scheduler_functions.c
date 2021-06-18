@@ -297,7 +297,6 @@ void find_job_parameters(task *task_list, job *new_job, int task_number, int job
         new_job->execution_time = min(actual_exec_time, task_list[task_number].WCET[(curr_crit_level + 1 == MAX_CRITICALITY_LEVELS) ? MAX_CRITICALITY_LEVELS - 1 : curr_crit_level + 1]);
     }
 
-    new_job->execution_time = new_job->execution_time;
     new_job->rem_exec_time = new_job->execution_time;
     new_job->WCET_counter = task_list[task_number].WCET[curr_crit_level];
     new_job->task_number = task_number;

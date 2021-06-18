@@ -8,27 +8,18 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    FILE *task_file, *statistics_file;
-    task_file = fopen(argv[1], "r");
-
-    if (task_file == NULL)
-    {
-        printf("ERROR: Cannot open input file. Format of execution is ./test input.txt\n");
-        return 0;
-    }
+    FILE *statistics_file;
 
     //get_task_set function - takes input from input file. Pass file pointer to the function.
-    task_set_struct *task_set = get_taskset(task_file);
+    task_set_struct *task_set = get_taskset();
     processor_struct *processor = initialize_processor();
-    stats = malloc(sizeof(stats_struct));
-    stats->total_active_energy = calloc(NUM_CORES, sizeof(double));
-    stats->total_idle_energy = calloc(NUM_CORES, sizeof(double));
-    stats->total_shutdown_time = calloc(NUM_CORES, sizeof(double));
-    stats->total_arrival_points = calloc(NUM_CORES, sizeof(int));
-    stats->total_completion_points = calloc(NUM_CORES, sizeof(int));
-    stats->total_criticality_change_points = calloc(NUM_CORES, sizeof(int));
-    stats->total_wakeup_points = calloc(NUM_CORES, sizeof(int));
-    stats->total_context_switches = calloc(NUM_CORES, sizeof(int));
+    stats_struct* stats = initialize_stats_struct();
+
+    if(task_set == NULL || processor == NULL || stats == NULL)
+    {
+        printf("Runtime error\n");
+        return 0;
+    }
 
     //Set the frequency values.
     frequency[0] = 0.5;
@@ -85,7 +76,6 @@ int main(int argc, char *argv[])
     }
 
     fclose(statistics_file);
-    fclose(task_file);
     for (int i = 0; i < NUM_CORES; i++)
     {
         fclose(output[i]);

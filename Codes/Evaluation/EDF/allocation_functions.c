@@ -125,7 +125,7 @@ int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *process
     int total_tasks = task_set->total_tasks;
 
     //Maximum utilisation per criticality level allowed for each core.
-    MAX_UTIL[0] = 1.00, MAX_UTIL[1] = 0.6, MAX_UTIL[2] = 0.5, MAX_UTIL[3] = 0.5;
+    MAX_UTIL[0] = 1.00;
 
     for (i = 0; i < processor->total_cores; i++)
     {

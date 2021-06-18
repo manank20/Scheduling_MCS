@@ -43,7 +43,7 @@ extern int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *
         task_set!=NULL
     
 */
-extern task_set_struct *get_taskset(FILE *fd);
+extern task_set_struct *get_taskset();
 
 /*
     Preconditions: 
@@ -96,6 +96,7 @@ extern void set_utilisation(task* task, int curr_crit_level, double exec_time);
 extern void reset_utilisation(task* task, int curr_crit_level);
 extern int check_all_cores(processor_struct *processor);
 extern int find_max_level(processor_struct *processor, task_set_struct *task_set);
+extern stats_struct* initialize_stats_struct();
 /*-------------------------------------------------------------------------*/
 
 #endif

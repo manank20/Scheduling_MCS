@@ -3,7 +3,7 @@
 /*
     Preconditions: 
         Input: {File pointer to input file}
-        fd!=NULL
+        input!=NULL
 
     Purpose of the function: Takes input from the file and returns a structure of the task set. 
 
@@ -12,21 +12,32 @@
         task_set!=NULL
     
 */
-task_set_struct *get_taskset(FILE *fd)
+task_set_struct *get_taskset()
 {
     int num_task, criticality_lvl;
     int tasks;
 
+    FILE *input, *exec;
+    input = fopen("input.txt", "r");
+
+    if (input == NULL)
+    {
+        printf("ERROR: Cannot open input file. Format of execution is ./test input.txt\n");
+        return 0;
+    }
+
+    exec = fopen("input_times.txt", "r");
+
     task_set_struct *task_set = (task_set_struct *)malloc(sizeof(task_set_struct));
 
     //Number of task_list
-    fscanf(fd, "%d", &(task_set->total_tasks));
+    fscanf(input, "%d", &(task_set->total_tasks));
     tasks = task_set->total_tasks;
     task_set->task_list = (task *)malloc(sizeof(task) * tasks);
 
     for (num_task = 0; num_task < tasks; num_task++)
     {
-        fscanf(fd, "%lf%lf%d", &task_set->task_list[num_task].phase, &task_set->task_list[num_task].relative_deadline, &task_set->task_list[num_task].criticality_lvl);
+        fscanf(input, "%lf%lf%d", &task_set->task_list[num_task].phase, &task_set->task_list[num_task].relative_deadline, &task_set->task_list[num_task].criticality_lvl);
 
         //As it is an implicit-deadline taskset, period = deadline.
         task_set->task_list[num_task].period = task_set->task_list[num_task].relative_deadline;
@@ -36,9 +47,17 @@ task_set_struct *get_taskset(FILE *fd)
 
         for (criticality_lvl = 0; criticality_lvl < MAX_CRITICALITY_LEVELS; criticality_lvl++)
         {
-            fscanf(fd, "%lf", &task_set->task_list[num_task].WCET[criticality_lvl]);
+            fscanf(input, "%lf", &task_set->task_list[num_task].WCET[criticality_lvl]);
             task_set->task_list[num_task].util[criticality_lvl] = (double)task_set->task_list[num_task].WCET[criticality_lvl] / (double)task_set->task_list[num_task].period;
             task_set->task_list[num_task].AET[criticality_lvl] = task_set->task_list[num_task].WCET[criticality_lvl];
+        }
+
+        int num_jobs;
+        fscanf(exec, "%d", &num_jobs);
+        task_set->task_list[num_task].exec_times = malloc(sizeof(double)*num_jobs);
+        for(int i=0; i<num_jobs; i++)
+        {
+            fscanf(exec, "%lf ", &task_set->task_list[num_task].exec_times[i]);
         }
     }
 
@@ -275,18 +294,20 @@ void find_job_parameters(task *task_list, job *new_job, int task_number, int job
     double actual_exec_time;
 
     new_job->release_time = release_time;
-    actual_exec_time = find_actual_execution_time(task_list[task_number].WCET[curr_crit_level], task_list[task_number].criticality_lvl, curr_crit_level);
+    // actual_exec_time = find_actual_execution_time(task_list[task_number].WCET[curr_crit_level], task_list[task_number].criticality_lvl, curr_crit_level);
 
-    if (curr_crit_level != MAX_CRITICALITY_LEVELS - 1 && task_list[task_number].criticality_lvl <= curr_crit_level)
-    {
-        new_job->execution_time = actual_exec_time;
-    }
-    else
-    {
-        new_job->execution_time = min(actual_exec_time, task_list[task_number].WCET[(curr_crit_level + 1 == MAX_CRITICALITY_LEVELS) ? MAX_CRITICALITY_LEVELS - 1 : curr_crit_level + 1]);
-    }
+    // if (curr_crit_level != MAX_CRITICALITY_LEVELS - 1 && task_list[task_number].criticality_lvl <= curr_crit_level)
+    // {
+    //     new_job->execution_time = actual_exec_time;
+    // }
+    // else
+    // {
+    //     new_job->execution_time = min(actual_exec_time, task_list[task_number].WCET[(curr_crit_level + 1 == MAX_CRITICALITY_LEVELS) ? MAX_CRITICALITY_LEVELS - 1 : curr_crit_level + 1]);
+    // }
 
-    new_job->execution_time = new_job->execution_time;
+    actual_exec_time = task_list[task_number].exec_times[job_number];
+
+    new_job->execution_time = actual_exec_time;
     new_job->rem_exec_time = new_job->execution_time;
     new_job->WCET_counter = task_list[task_number].WCET[curr_crit_level];
     new_job->task_number = task_number;

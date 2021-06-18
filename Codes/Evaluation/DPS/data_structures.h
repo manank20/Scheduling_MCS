@@ -59,6 +59,7 @@ typedef struct
     int core;
     int job_number;
     double *util;
+    double *exec_times;
     int shutdown;
 } task;
 

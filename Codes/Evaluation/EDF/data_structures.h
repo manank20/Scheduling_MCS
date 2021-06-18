@@ -9,7 +9,7 @@
 #include <math.h>
 
 //Max criticality levels assumed
-#define MAX_CRITICALITY_LEVELS 4
+#define MAX_CRITICALITY_LEVELS 1
 
 //Decision points
 #define ARRIVAL 0
@@ -59,6 +59,7 @@ typedef struct
     int core;
     int job_number;
     double *util;
+    double *exec_times;
     int shutdown;
 } task;
 
