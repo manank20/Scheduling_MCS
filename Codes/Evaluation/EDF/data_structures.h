@@ -148,8 +148,6 @@ typedef struct
     int threshold_crit_lvl;
     int is_shutdown;
 
-    int num_tasks_allocated;
-
 } core_struct;
 
 /*

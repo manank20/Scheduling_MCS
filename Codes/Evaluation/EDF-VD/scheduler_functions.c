@@ -14,11 +14,11 @@
 */
 task_set_struct *get_taskset(FILE *fd)
 {
-int num_task, criticality_lvl;
+    int num_task, criticality_lvl;
     int tasks;
 
-    FILE *input, *exec;
-    input = fopen("input.txt", "r");
+    FILE *input, *exec, *allocation;
+    input = fopen("../input_mcs.txt", "r");
 
     if (input == NULL)
     {
@@ -26,7 +26,8 @@ int num_task, criticality_lvl;
         return 0;
     }
 
-    exec = fopen("input_times.txt", "r");
+    exec = fopen("../input_times.txt", "r");
+    allocation = fopen("../input_allocation.txt", "r");
 
     task_set_struct *task_set = (task_set_struct *)malloc(sizeof(task_set_struct));
 
@@ -34,6 +35,14 @@ int num_task, criticality_lvl;
     fscanf(input, "%d", &(task_set->total_tasks));
     tasks = task_set->total_tasks;
     task_set->task_list = (task *)malloc(sizeof(task) * tasks);
+
+    int cores[tasks];
+    for(int i=0; i<tasks; i++)
+    {
+        int task, core;
+        fscanf(allocation, "%d%d", &task, &core);
+        cores[task] = core;
+    }
 
     for (num_task = 0; num_task < tasks; num_task++)
     {
@@ -43,7 +52,7 @@ int num_task, criticality_lvl;
         task_set->task_list[num_task].period = task_set->task_list[num_task].relative_deadline;
         task_set->task_list[num_task].job_number = 0;
         task_set->task_list[num_task].util = (double *)malloc(sizeof(double) * MAX_CRITICALITY_LEVELS);
-        task_set->task_list[num_task].core = -1;
+        task_set->task_list[num_task].core = cores[num_task];
 
         for (criticality_lvl = 0; criticality_lvl < MAX_CRITICALITY_LEVELS; criticality_lvl++)
         {
@@ -63,6 +72,10 @@ int num_task, criticality_lvl;
 
     //Sort the tasks list based on their periods.
     qsort((void *)task_set->task_list, tasks, sizeof(task_set->task_list[0]), period_comparator);
+
+    fclose(input);
+    fclose(exec);
+    fclose(allocation);
 
     return task_set;
 }
@@ -717,6 +730,7 @@ void schedule_taskset(task_set_struct *task_set, processor_struct *processor)
 */
 void runtime_scheduler(task_set_struct *task_set, processor_struct *processor)
 {
+    // int result = 1;
     int result = allocate_tasks_to_cores(task_set, processor);
     print_task_list(task_set);
 

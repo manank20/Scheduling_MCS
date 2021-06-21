@@ -1,12 +1,10 @@
 CC = gcc
 CFLAG = -g -Wall
 
-exec: test input.txt output.txt
-	./test input.txt output.txt
-
 test: auxiliary_functions.o check_functions.o procrastination.o queue.o allocation_functions.o scheduler_functions.o driver.o
 	$(CC) $(CFLAG) -o test auxiliary_functions.o check_functions.o procrastination.o queue.o allocation_functions.o scheduler_functions.o driver.o -lm
-	
+	./test
+
 driver.o: driver.c
 	$(CC) $(CFLAG) -c driver.c
 

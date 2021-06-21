@@ -2,12 +2,6 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc < 3)
-    {
-        printf("Invalid parameters. Format for input is ./test INPUT_FILE OUTPUT_FILE\n");
-        return 0;
-    }
-
     FILE *statistics_file;
 
     //get_task_set function - takes input from input file. Pass file pointer to the function.
@@ -41,13 +35,14 @@ int main(int argc, char *argv[])
 
         fprintf(output[i], "Schedule for core %d\n", i);
     }
-    output_file = fopen(argv[2], "w");
+    output_file = fopen("output.txt", "w");
     if (output_file == NULL)
     {
         printf("ERROR: Cannot open output file. Make sure right permissions are provided\n");
         return 0;
     }
 
+    printf("Starting runtime scheduling\n");
     runtime_scheduler(task_set, processor);
 
     statistics_file = fopen("statistics.txt", "w");

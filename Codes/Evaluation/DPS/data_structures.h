@@ -57,6 +57,7 @@ typedef struct
     double AET[MAX_CRITICALITY_LEVELS];
     double virtual_deadline;
     int core;
+    int task_number;
     int job_number;
     double *util;
     double *exec_times;
@@ -147,8 +148,6 @@ typedef struct
     double x_factor;
     int threshold_crit_lvl;
     int is_shutdown;
-
-    int num_tasks_allocated;
 
 } core_struct;
 

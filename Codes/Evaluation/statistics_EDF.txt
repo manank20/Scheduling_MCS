@@ -1,23 +1,23 @@
 STATISTICS FOR ALL CORES
 Core 0
-            Total active time: 658928.00
-            Total idle time: 435022.00
+            Total active time: 840768.50
+            Total idle time: 253181.50
             Total shutdown time: 0.00
             Total arrival points: 80550
-            Total completion points: 127824
+            Total completion points: 142410
             Total wakeup points: 0
             Total crit change points: 0
-            Total context switches: 147322
+            Total context switches: 172433
 
 Core 1
-            Total active time: 664140.50
-            Total idle time: 429809.50
-            Total shutdown time: 0.00
-            Total arrival points: 35750
-            Total completion points: 52481
-            Total wakeup points: 0
+            Total active time: 482300.00
+            Total idle time: 506053.50
+            Total shutdown time: 105596.50
+            Total arrival points: 22120
+            Total completion points: 37895
+            Total wakeup points: 1095
             Total crit change points: 0
-            Total context switches: 53243
+            Total context switches: 37895
 
 Core 2
             Total active time: 0.00

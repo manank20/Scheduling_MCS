@@ -18,7 +18,7 @@ task_set_struct *get_taskset()
     int tasks;
 
     FILE *input, *exec;
-    input = fopen("input.txt", "r");
+    input = fopen("../input_mcs.txt", "r");
 
     if (input == NULL)
     {
@@ -26,7 +26,7 @@ task_set_struct *get_taskset()
         return 0;
     }
 
-    exec = fopen("input_times.txt", "r");
+    exec = fopen("../input_times.txt", "r");
 
     task_set_struct *task_set = (task_set_struct *)malloc(sizeof(task_set_struct));
 
@@ -41,6 +41,7 @@ task_set_struct *get_taskset()
 
         //As it is an implicit-deadline taskset, period = deadline.
         task_set->task_list[num_task].period = task_set->task_list[num_task].relative_deadline;
+        task_set->task_list[num_task].task_number = num_task;
         task_set->task_list[num_task].job_number = 0;
         task_set->task_list[num_task].util = (double *)malloc(sizeof(double) * MAX_CRITICALITY_LEVELS);
         task_set->task_list[num_task].core = -1;
@@ -63,6 +64,9 @@ task_set_struct *get_taskset()
 
     //Sort the tasks list based on their periods.
     qsort((void *)task_set->task_list, tasks, sizeof(task_set->task_list[0]), period_comparator);
+
+    fclose(input);
+    fclose(exec);
 
     return task_set;
 }
