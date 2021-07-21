@@ -59,10 +59,6 @@ extern void runtime_scheduler(task_set_struct *task_set, processor_struct *proce
 extern double find_max_slack(task_set_struct *task_set, int crit_level, int core_no, double deadline, double curr_time, job_queue_struct *ready_queue);
 /*-------------------------------------------------------------------------*/
 
-/*---------------------------PROCRASTINATION FUNCTIONS---------------------------*/
-extern double find_procrastination_interval(double curr_time, task_set_struct *task_set, int curr_crit_level, int core_no);
-/*-------------------------------------------------------------------------------*/
-
 /*---------------------------CHECK FUNCTIONS---------------------------*/
 extern x_factor_struct check_schedulability(task_set_struct *task_set, int core_no);
 /*---------------------------------------------------------------------*/

@@ -87,7 +87,7 @@ double find_procrastination_interval(double curr_time, task_set_struct *task_set
     double earliest_task_WCET = 0;
     job *job_list, *free_job;
 
-    fprintf(output[core_no], "Finding procrastination interval:\n");
+    // fprintf(output[core_no], "Finding procrastination interval:\n");
 
     for (i = 0; i < task_set->total_tasks; i++)
     {
@@ -106,11 +106,11 @@ double find_procrastination_interval(double curr_time, task_set_struct *task_set
         }
     }
 
-    fprintf(output[core_no], "Earliest arriving job Deadline: %.5lf\n", next_deadline1);
+    // fprintf(output[core_no], "Earliest arriving job Deadline: %.5lf\n", next_deadline1);
 
     if ((next_deadline1 - curr_time - earliest_task_WCET) < SHUTDOWN_THRESHOLD)
     {
-        fprintf(output[core_no], "Interval using Dnext1: %.5lf. Less than SDT\n", (next_deadline1 - curr_time - earliest_task_WCET));
+        // fprintf(output[core_no], "Interval using Dnext1: %.5lf. Less than SDT\n", (next_deadline1 - curr_time - earliest_task_WCET));
         return (next_deadline1 - curr_time - earliest_task_WCET);
     }
 
@@ -132,7 +132,7 @@ double find_procrastination_interval(double curr_time, task_set_struct *task_set
         }
     }
 
-    fprintf(output[core_no], "Latest arriving job deadline: %.5lf\n", next_deadline2);
+    // fprintf(output[core_no], "Latest arriving job deadline: %.5lf\n", next_deadline2);
 
     job_list = find_job_list(curr_time, next_deadline2, task_set, curr_crit_level, core_no);
     // fprintf(output[core_no], "Job list:\n");
@@ -150,18 +150,18 @@ double find_procrastination_interval(double curr_time, task_set_struct *task_set
 
     // total_utilisation = (double)((int)(total_utilisation * 100)) / 100;
 
-    fprintf(output[core_no], "Calculation:\n");
+    // fprintf(output[core_no], "Calculation:\n");
     while (job_list != NULL)
     {
-        fprintf(output[core_no], "Job: %d, Release time: %.5lf, Execution time: %.5lf, Total utilisation: %.5lf\n", job_list->task_number, job_list->release_time, job_list->execution_time, total_utilisation);
+        // fprintf(output[core_no], "Job: %d, Release time: %.5lf, Execution time: %.5lf, Total utilisation: %.5lf\n", job_list->task_number, job_list->release_time, job_list->execution_time, total_utilisation);
         if (job_list->absolute_deadline > next_deadline2)
         {
             timer_expiry -= ((next_deadline2 - job_list->release_time) * ((double)job_list->execution_time / (double)task_set->task_list[job_list->task_number].period) * total_utilisation);
-            fprintf(output[core_no], "If statement\n");
+            // fprintf(output[core_no], "If statement\n");
         }
         else
         {
-            fprintf(output[core_no], "Else statement\n");
+            // fprintf(output[core_no], "Else statement\n");
             timer_expiry -= job_list->execution_time;
         }
 
@@ -170,13 +170,13 @@ double find_procrastination_interval(double curr_time, task_set_struct *task_set
             timer_expiry = job_list->next->absolute_deadline;
         }
 
-        fprintf(output[core_no], "Time expiry: %.5lf\n", timer_expiry);
+        // fprintf(output[core_no], "Time expiry: %.5lf\n", timer_expiry);
 
         free_job = job_list;
         job_list = job_list->next;
         free(free_job);
     }
-    fprintf(output[core_no], "Time expiry: %.5lf\n", timer_expiry);
+    // fprintf(output[core_no], "Time expiry: %.5lf\n", timer_expiry);
 
     return timer_expiry - curr_time;
 }
