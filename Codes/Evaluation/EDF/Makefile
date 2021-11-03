@@ -1,12 +1,9 @@
 CC = gcc
 CFLAG = -g -Wall
 
-test: auxiliary_functions.o check_functions.o procrastination.o queue.o allocation_functions.o scheduler_functions.o driver.o
-	$(CC) $(CFLAG) -o test auxiliary_functions.o check_functions.o procrastination.o queue.o allocation_functions.o scheduler_functions.o driver.o -lm
+test: scheduling.o auxiliary_functions.o check_functions.o procrastination.o queue.o allocation_functions.o scheduler_functions.o driver.o
+	$(CC) $(CFLAG) -o test scheduling.o auxiliary_functions.o check_functions.o procrastination.o queue.o allocation_functions.o scheduler_functions.o driver.o -lm
 	./test
-
-driver.o: driver.c
-	$(CC) $(CFLAG) -c driver.c
 
 scheduler_functions.o: scheduler_functions.c
 	$(CC) $(CFLAG) -c scheduler_functions.c
@@ -14,17 +11,23 @@ scheduler_functions.o: scheduler_functions.c
 allocation_functions.o: allocation_functions.c
 	$(CC) $(CFLAG) -c allocation_functions.c
 
-procrastination.o: procrastination.c
-	$(CC) $(CFLAG) -c procrastination.c
+driver.o: driver.c
+	$(CC) $(CFLAG) -c driver.c
 
-queue.o: queue.c
-	$(CC) $(CFLAG) -c queue.c
+procrastination.o: ../common/procrastination.c
+	$(CC) $(CFLAG) -c ../common/procrastination.c
 
-check_functions.o: check_functions.c
-	$(CC) $(CFLAG) -c check_functions.c
+queue.o: ../common/queue.c
+	$(CC) $(CFLAG) -c ../common/queue.c
 
-auxiliary_functions.o: auxiliary_functions.c
-	$(CC) $(CFLAG) -c auxiliary_functions.c
+check_functions.o: ../common/check_functions.c
+	$(CC) $(CFLAG) -c ../common/check_functions.c
+
+auxiliary_functions.o: ../common/auxiliary_functions.c
+	$(CC) $(CFLAG) -c ../common/auxiliary_functions.c
+
+scheduling.o: ../common/scheduling.c
+	$(CC) $(CFLAG) -c ../common/scheduling.c
 
 clean:
 	rm -f *.o test

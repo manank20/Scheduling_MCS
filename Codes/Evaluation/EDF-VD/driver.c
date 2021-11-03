@@ -1,8 +1,9 @@
-#include "functions.h"
+#include "../common/functions.h"
 
 int main(int argc, char *argv[])
 {
     FILE *statistics_file;
+    MAX_CRITICALITY_LEVELS = 4;
 
     //get_task_set function - takes input from input file. Pass file pointer to the function.
     task_set_struct *task_set = get_taskset();
@@ -46,28 +47,16 @@ int main(int argc, char *argv[])
     runtime_scheduler(task_set, processor);
 
     statistics_file = fopen("statistics.txt", "w");
-    fprintf(statistics_file, "STATISTICS FOR ALL CORES\n");
     for (int i = 0; i < NUM_CORES; i++)
     {
-        fprintf(statistics_file, "Core %d\n", i);
-        fprintf(statistics_file, "\
-            Total active time: %.2lf\n\
-            Total idle time: %.2lf\n\
-            Total shutdown time: %.2lf\n\
-            Total arrival points: %d\n\
-            Total completion points: %d\n\
-            Total wakeup points: %d\n\
-            Total crit change points: %d\n\
-            Total context switches: %d\n",
+        fprintf(statistics_file, "%.2lf %.2lf %.2lf %d %d %.2lf %.2lf\n", 
                 stats->total_active_energy[i],
                 stats->total_idle_energy[i],
                 stats->total_shutdown_time[i],
-                stats->total_arrival_points[i],
+                stats->total_discarded_jobs[i],
                 stats->total_completion_points[i],
-                stats->total_wakeup_points[i],
-                stats->total_criticality_change_points[i],
-                stats->total_context_switches[i]);
-        fprintf(statistics_file, "\n");
+                stats->total_discarded_jobs_executed[i],
+                stats->total_discarded_jobs_available[i]);
     }
 
     fclose(statistics_file);
