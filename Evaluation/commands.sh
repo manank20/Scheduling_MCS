@@ -36,7 +36,7 @@ cp EDF/statistics.txt statistics_EDF.txt
 
 rm input_allocation.txt input_cores.txt
 
-dir="./discarded/util_4/sample_taskset_5"
+dir="./util_1"
 
 mkdir -p ${dir}
 mkdir -p ${dir}/DPS ${dir}/EDF-VD ${dir}/EDF-VD-DJ ${dir}/EDF

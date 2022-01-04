@@ -16,7 +16,7 @@ int main()
     rts_file = fopen("input_rts.txt", "w");
 
     srand(time(NULL));
-    int num_tasks = 13;
+    int num_tasks = 8;
 
     double phase = 0.00;
 

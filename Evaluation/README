@@ -1,101 +1,73 @@
 PROCRASTINATION SCHEDULING FOR MULTI-CRITICALITY SYSTEMS IN A MULTI-CORE ENVIRONMENT.
 
-For compiling and executing the program, run the commands.sh file. 
-./commands.sh
+Directory Structure:
+1) Codes: Contains the codes for various scheduling algorithms, discussed over time.
 
-This will execute the makefile, run the program and store the output in output.txt
+2) Evaluation: Contains the implementations for DPS, EDF-VD, EDF-VD with DJ and EDF with procrastination
+    2.1) common: Contains the common functions for all the algorithms
+        -> auxiliary_functions.c: Contains the printer functions and other helper functions
+        -> check_functions.c: Contains the functions for checking the schedulability conditions
+            -> x_factor_struct check_schedulability(task_set_struct *task_set, int core_no): 
+                Given a taskset and the core, it checks whether the sub-taskset belonging to that core is schedulable or not.
+                Return value: Updated x-factor for the core. If the core is not schedulable, then the x-factor is 0.
+        -> data_structures.h: Contains the various data structures
+        -> driver.c: The driver code, which starts the scheduling.
+        -> functions.h: Contains the declaration of all functions in all the files. Grouped by the use of the function (auxiliary, check, scheduler, allocation etc)
+        -> procrastination.c: Contains the function for calculating the procrastination interval
+            -> double find_procrastination_interval(double curr_time, task_set_struct *task_set, int curr_crit_level, int core_no):
+                Given the current time, current criticality level, taskset and core, it calculates the procrastination interval for all the tasks belonging to the core
+                with criticality level greater than or equal to the current criticality level and the deadlines greater than current time.
+                Return value: Procrastination interval
+        -> queue.c: Contains various queue functions (insertion, deletion for ready queue, discarded queue)
+        -> scheduling.c: Contains the scheduling functions
+            -> decision_struct find_decision_point(task_set_struct *task_set, processor_struct *processor, double super_hyperperiod):
+                Given the taskset, it finds the next closest decision point. The decision_struct contains the decision point, decision time and the core no.
+                The next decision point is the minimum of arrival, completion, WCET_counter and timer_expiry of all tasks and cores.
+                Return value: The next decision point
+            -> double find_max_slack(task_set_struct *task_set, int crit_level, int core_no, double deadline, double curr_time, job_queue_struct *ready_queue):
+                Given taskset, curr_crit_level, core no, deadline of discarded job and the current time, it finds the maximum slack available between current time
+                and the deadline, considering the jobs in the ready queue and the jobs arriving in the future before the deadline.
+                Return value: max slack
+            -> void accommodate_discarded_jobs(job_queue_struct **ready_queue, job_queue_struct **discarded_queue, task_set_struct *task_set, int core_no, int curr_crit_level, double curr_time):
+                Given the ready queue, discarded queue and taskset, it tries to move jobs from the ready queue to the discarded job by calculating the maximum slack for each discarded job.
+                The discarded queue is sorted based on the deadline and criticality level (criticality level highest to lowest, deadline earliest to latest)
+            -> void update_job_arrivals(job_queue_struct **ready_queue, job_queue_struct **discarded_queue, task_set_struct *task_set, int curr_crit_level, double curr_time, int core_no, core_struct *core, int algo, int timer_expiry):
+                This function is responsible for updating the job arrival in the ready queue or discarded queue. If the job's criticality level is greater than curr_crit_level, then it adds it
+                in ready queue. Otherwise, it calculates the max slack and decides whether to add it in ready queue or discarded queue
+    2.2) Functions in DPS, EDF-VD, EDF-VD with DJ and EDF are same with different implementations:
+        -> allocation_functions.c: Contains the functions for allocating the taskset to the core
+            -> int allocate(task_set_struct *task_set, int task_number, processor_struct *processor, double total_util[][MAX_CRITICALITY_LEVELS], double MAX_UTIL[], int exceptional_task, int shutdown, int non_shutdown_cores, FILE* allocation_file):
+                It is responsible for allocating the task with task_number to one of the cores. It starts from the 1st core and checks whether the core is schedulable if the task is allocated to the core. If it is, then it returns 1, else it moves on to next core. If no core is available, it returns 0.
+                Return value: 1 if task is allocated, else 0
+            -> int allocate_tasks_to_cores(task_set_struct *task_set, processor_struct *processor):
+                It is responsible for dividing the taskset into exceptional, non-shutdown and shutdown tasks. Then, it starts allocation of exceptional tasks, followed by non-shutdown tasks and shutdown tasks. If for any task, the allocate function returns 0, this function prints "Insufficient cores" and exits.
+        -> scheduler_functions.c: Contains the functions for scheduling the taskset.
+            -> void schedule_taskset(task_set_struct *task_set, processor_struct *processor):
+                Starts scheduling of taskset. The scheduling is done till the superhyperperiod of all tasks.
+                1. The next decision point is found.
+                2. If the decision point is ARRIVAL, then the jobs are updated in ready queue and next highest priority job is scheduled.
+                3. If the decision point is COMPLETION, then the job is removed from ready queue.  
+                    3.1: If the ready queue is empty, then procrastination interval is calculated. 
+                        3.1.1: If PI > SDT, core is shutdown and next invocation time is set.
+                        3.1.2: Else, core tries to accommodate discarded jobs
+                    3.2: Else, highest priority job is scheduled.
+                4. If the decision point is TIMER_EXPIRY, all jobs are updated in ready queue and highest priority job is scheduled.
+                5. If the decision point is CRIT_CHANGE, all LO-criticality jobs are first inserted in discarded queue. Then, jobs are accommodated back from discarded queue to ready queue. 
+                     This is done for all cores.
+            MINOR CHANGES FOR EDF-VD, EDF-VD WITH DJ AND EDF WITH PROCRASTINATION
+            -> For EDF-VD, TIMER_EXPIRY decision point is removed and accommodation of discarded jobs is removed
+            -> For EDF-VD with DJ, TIMER_EXPIRY decision point is removed
+            -> For EDF, accommodation of discarded jobs is removed
 
-Files in the zip file:
-1) commands.sh:
-    Contains the commands needed for executing the makefile, run the program and store the output in output.txt. After successfully running the program, it will remove all the .o files and executable.
+3) create_taskset.c: Contains the functions for creating taskset.
 
-2) input.txt: 
-    Contains the task set.
-    The first line contains the number of tasks.
-    Each subsequent line contains the parameters of each task which are:
-    Phase, Relative deadline, Criticality level, WCET for each criticality level
+4) create_times.c: Contains the functions for finding execution times of all jobs of all tasks. This is the execution time that is used during scheduling.
 
-3) output.txt, output_*.txt:
-    Contains the output of the scheduling. 
-    output.txt contains the allocation of the tasks and the final processor statistics after the scheduling is done.
-    Each of output_*.txt contains the schedule for the corresponding core. For example, output_0.txt contains the schedule of core 0.
-    Each line of output_*.txt contains the following:
-    1. The decision time, point, the core and the current crit_level.
-    2.1 If the decision is ARRIVAL, then the type of jobs that have arrived (Normal / Discarded), and the queue in which it is inserted (Ready for normal, Ready / Discarded for discarded)
-    2.2 If the decision is COMPLETION, then the job that completed execution. If the ready queue is not empty, then the information about new job that is scheduled. If the ready queue is empty, the information about procrastination interval.
-    2.3 If the decision is TIMER_EXPIRY, then the information about job arrivals and the new job that is scheduled.
-    2.4 If the decision is CRIT_CHANGE, then the information about updating the ready queue and the discarded queue for each core.
-    3. Finally, if a job is scheduled, information about the scheduled job is printed.
+5) commands.sh:
+        -> Creates the taskset - input_mcs.txt for DPS, EDF-VD and input_rts.txt for EDF
+        -> Creates input_times.txt that contains execution times of all jobs of all tasks.
+        -> Starts scheduling of all algorithms
+        -> Moves the statistics of all algorithms to the parent folder. 
 
-
-4) data_structures.h: 
-    Contains the information about ADTs used. The ADTs used are:
-    a. Structure for task
-    b. Structure for taskset containing list of all tasks
-    c. Structure for a job
-    d. Structure for a job queue containing list of all jobs.
-    e. Structure for a core
-    f. Structure for a processor containing list of all cores.
-    g. Structure for the decision.
-
-5) auxiliary_functions.h and auxiliary_functions.c:
-    These two files contains the helper functions needed while scheduling. 
-    List of functions:
-    a. randnum
-    b. gcd
-    c. min
-    d. max
-    e. period_comparator
-    f. deadline_comparator
-    g. print_task_list
-    h. print_job_list
-    i. print_total_utilization
-    j. print_processor
-    k. compare_jobs
-    l. find_actual_execution_time
-    m. set_virtual_deadlines
-    n. reset_virtual_deadlines
-
-6) check_functions.h and check_functions.c:
-    These two files contains the functions needed for checking the schedulability of the taskset. If the taskset is schedulable, it returns the x factor for the taskset.
-    List of functions:
-    a. find_total_utilization
-    b. check_schedulability
-
-7) allocation_functions.h and allocation_functions.c:
-    These two files contains the functions for initialization of the processor and allocation of tasks to each core in the processor.
-    The allotment of tasks is done in such a way that each core will have high criticality tasks with a maximum utilisation of 70%.
-    List of functions:
-    a. initialize_processor
-    b. allocate
-    c. allocate_tasks_to_cores
-
-8) scheduler_functions.h and scheduler_functions.c:
-    These two files contains the functions needed for scheduling the taskset. The scheduling will be done for all cores simultaneously by finding the earliest decision point among all cores.
-    Each core will have a separate ready queue which will contain the jobs ready for execution. 
-    List of functions:
-    a. get_taskset
-    b. find_superhyperperiod
-    c. find_max_slack
-    d. find_earliest_arrival_job
-    e. find_decision_point
-    f. insert_job_in_discarded_queue
-    g. remove_jobs_from_discarded_queue
-    h. insert_job_in_ready_queue
-    i. remove_jobs_from_ready_queue
-    j. insert_discarded_jobs_in_ready_queue
-    k. accommodate_discarded_jobs
-    l. find_job_parameters
-    m. update_job_arrivals
-    n. update_job_removal
-    o. schedule_new_job
-    p. find_job_list
-    q. find_procrastination_interval
-    r. schedule_taskset
-    s. runtime_scheduler
-
-9)driver.c: 
-    Contains the driver code to run the program. The user is responsible for:
-    1. Initializing the taskset using get_taskset function
-    2. Initializing the processor using the initialize_processor function.
-    3. Running the runtime_scheduler function to schedule the taskset.
+TO RUN ALL ALGORITHMS, JUST RUN THE COMMAND: ./commands.sh
+TO RUN INDIVIDUAL ALGORITHMS, FIRST CREATE THE TASKSET FILE AND TIMES FILE USING create_taskset.c AND create_times.c AND THEN EXECUTE COMMAND: make FROM RESPECTIVE DIRECTORY.
