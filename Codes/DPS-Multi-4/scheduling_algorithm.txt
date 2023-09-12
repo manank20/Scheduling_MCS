@@ -105,3 +105,21 @@ else:
         U_high = Sum of util of higher priority jobs arriving in future where util = util[crit_level]
 
         Select lowest frequency fi such that U_dyn <= fi/fmax
+
+
+
+-----------------------------------------------------------------------------------------------------------------------
+For migration
+check if number of shutdownable cores < x% of total cores (say 50%)
+if yes then try to migrate tasks from the least utilized non-shutdown cores to the most utilized one
+otherwise scheduling algorithm will be expo. complexity, if we try to check all cores max procrastination interval everytime
+
+
+
+are we going to use migration of tasks of all criticality or only the less/least critical tasks? schedule tasks criticality wise?
+
+
+ans:-
+criticality change, util below threshold, core idling
+
+only highest criticality job not migrated

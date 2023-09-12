@@ -126,7 +126,7 @@ typedef struct job_queue_struct
         state: The current state of core. (ACTIVE or SHUTDOWN)
         next_invocation_time: The countdown timer for core. The core will wakeup after timer expires.
         x_factor: The factor to be used while calculating virtual deadlines.
-        threshold_crit_lvl: The threshold level aboe which all tasks are considered as HI criticality and below which all tasks are considered as LO criticality.
+        threshold_crit_lvl: The threshold level above which all tasks are considered as HI criticality and below which all tasks are considered as LO criticality.
         rem_util: The remaining utilisation of core. This is needed to check whether additional tasks can be allocated to this core.
         completed_scheduling: Flag to indicate whether this core has completed its hyperperiod.
         is_shutdown: SHUTDOWN or NON-SHUTDOWN core.

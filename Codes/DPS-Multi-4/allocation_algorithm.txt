@@ -129,6 +129,69 @@ beginLoop
 endLoop
 
 ------------------------------------------------------------------------------------------------------------------------
+
+
+///// Proposed modification for implementing migration
+
+add two sets, shutdownable cores and non shutdownable cores, and on decision
+point, try to allocate it to non-shutdownable cores first, and if not possible,
+then allocate it to shutdownable core.
+
+** but then wont those one/more core become more utilized then others?
+
+
+Algorithm allocate_shutdown_tasks_migration:
+two sets CORES_S & CORES_NS
+
+K = CORES_NS.next()
+for criticality level x = 4 to 0
+beginLoop
+    for tasks i in non_shutdown_tasks with i.criticality = x
+    beginLoop
+        for criticality level in [0,x]
+            if K.rem_util[level] < i.util[level] then
+            flag = 0
+            break
+        
+        if flag = 0 then
+            K = CORES_NS.next()
+            if K == NULL then
+                K = CORES_S.next()
+            if K == NULL then
+                print "Insufficient number of cores"
+                exit
+            Repeat the process for same task i
+        else
+            flag = 0
+            if total_utilisation of core K at level x < MAX Utilization at level x:
+                if schedulability conditions of core K are satisfied after allocating task i to core k:
+                    flag = 1
+                    Allocate task i to core k
+                    check if core K is SHutdown or not, and put in appropriate set
+                    Update the x factor and threshold criticality level of core K
+                    for criticality level in [0,x]
+                        K.rem_util[level] = K.rem_util[level] - i.util[level]
+            else
+                Remove task i from core K 
+                check if core K is SHutdown or not, and put in appropriate set
+
+            if flag = 0 then         
+                K = CORES_NS.next()
+                if K == NULL then
+                    K = CORES_S.next()
+                if K == NULL then
+                    print "Insufficient number of cores"
+                exit
+                Repeat the process for the same task i.
+    endLoop
+endLoop
+
+
+to prove:- 
+minimum cores, shutdownable cores m 
+////////
+
+
 Algorithm allocate_shutdown_tasks:
 Input: List of shutdown_tasks and N processors.
 Output: Set of shutdown subtasks allocated to each core.
@@ -173,3 +236,5 @@ beginLoop
 endLoop
 
 ------------------------------------------------------------------------------------------------------------------------
+
+
