@@ -1,0 +1,107 @@
+For migration
+check if number of shutdownable cores < x% of total cores (say 50%)
+if yes then try to migrate tasks from the least utilized non-shutdown cores to the most utilized one
+otherwise scheduling algorithm will be expo. complexity, if we try to check all cores max procrastination interval everytime
+
+
+
+are we going to use migration of tasks of all criticality or only the less/least critical tasks? schedule tasks criticality wise?
+
+
+ans:-
+criticality change, util below threshold, core idling
+
+only highest criticality job not migrated, all other can
+
+
+
+--Algorithm to trigger when a core util goes below a certain threshold:-
+Inputs: core C, threshold th (<1)
+
+
+if check_core_utilization() >= th
+    then return
+
+for Job j in ready_queue of C 
+    if J.criticality_level < 1 then
+        add J to discarded queue
+        remove J from C.ready_queue
+
+
+
+
+
+-------
+# Define Constants
+CRITICALITY_LEVELS = 4
+CORE_COUNT = 4
+THRESHOLD_UTILIZATION = [0.7, 0.6, 0.5, 0.4]  # Threshold utilization for each criticality level
+
+# Initialize Cores
+cores = [Core(i, 0.0) for i in range(CORE_COUNT)]
+
+# Initialize Task Queues for each criticality level
+task_queues = [[] for _ in range(CRITICALITY_LEVELS)]
+
+# Function to Check Core Utilization for a specific criticality level
+def check_core_utilization(core, criticality_level):
+    if core.utilization < THRESHOLD_UTILIZATION[criticality_level]:
+        return True
+    return False
+
+# Function to Migrate Tasks for a specific criticality level
+def migrate_tasks(source_core, destination_core, criticality_level):
+    for task in source_core.task_list[criticality_level]:
+        destination_core.task_list[criticality_level].append(task)
+    source_core.task_list[criticality_level] = []
+
+# Main Scheduling Loop
+while True:
+    # Check Core Utilization for each criticality level
+    for core in cores:
+        for criticality_level in range(CRITICALITY_LEVELS):
+            if check_core_utilization(core, criticality_level):
+                # Find the highest criticality task in the core for this level
+                highest_criticality_task = None
+                for task in core.task_list[criticality_level]:
+                    if (
+                        highest_criticality_task is None
+                        or (task.criticality > highest_criticality_task.criticality
+                            and not task.migrated)
+                    ):
+                        highest_criticality_task = task
+
+                if highest_criticality_task is not None:
+                    # Mark the highest criticality task as migrated
+                    highest_criticality_task.migrated = True
+                    # Migrate other tasks to another core for the same criticality level
+                    for destination_core in cores:
+                        if (
+                            destination_core.id != core.id
+                            and check_core_utilization(
+                                destination_core, criticality_level
+                            )
+                        ):
+                            migrate_tasks(
+                                core, destination_core, criticality_level
+                            )
+                            break
+                    # Shut down the core if no tasks are left
+                    if not core.task_list[criticality_level]:
+                        cores.remove(core)
+
+    # Schedule tasks on active cores for each criticality level (your scheduling logic here)
+    for core in cores:
+        for criticality_level in range(CRITICALITY_LEVELS):
+            for task in task_queues[criticality_level]:
+                if task.execution_time <= core.utilization:
+                    core.utilization -= task.execution_time
+                    core.task_list[criticality_level].append(task)
+                    task_queues[criticality_level].remove(task)
+                    break
+
+    # Perform other scheduling and task queue management (if needed)
+    # ...
+
+    # Exit the loop when all tasks are completed
+    if all(len(queue) == 0 for queue in task_queues):

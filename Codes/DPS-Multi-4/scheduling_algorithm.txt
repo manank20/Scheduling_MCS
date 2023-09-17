@@ -109,6 +109,10 @@ else:
 
 
 -----------------------------------------------------------------------------------------------------------------------
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 2023
 For migration
 check if number of shutdownable cores < x% of total cores (say 50%)
 if yes then try to migrate tasks from the least utilized non-shutdown cores to the most utilized one
@@ -122,4 +126,4 @@ are we going to use migration of tasks of all criticality or only the less/least
 ans:-
 criticality change, util below threshold, core idling
 
-only highest criticality job not migrated
+only highest criticality job not migrated, all other can
